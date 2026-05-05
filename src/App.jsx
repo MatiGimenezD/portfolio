@@ -252,28 +252,29 @@ const mainProjects = [
 
 const hobbyProjects = [
   {
-    name: "Bot Twitter Inflación",
+    name: "Bot de Twitter – Variación diaria de precios de Día (BotSuperDia)",
     subtitle: "Web Scraping y Automatización",
     tag: "Bot",
-    images: ["/diabot.png", "/diabot1.png"],
+    images: ["/botdia.png"],
     description:
-      "Bot que realizaba scraping automatizado en páginas de supermercado para publicar regularmente la inflación.",
+      "Desarrollé un bot automatizado en Python que analiza diariamente la variación de precios de un conjunto de 82 productos del supermercado Día. El sistema realiza web scraping sobre los productos, guarda los datos en una base de datos local como respaldo y publica automáticamente los resultados en Twitter mediante la API oficial. Tecnologías utilizadas: Python, Web Scraping (BeautifulSoup), Base de datos local (MySQL), Twitter API.",
     links: [
-      { label: "GitHub", url: "https://github.com/MatiGimenezD/BotSuperDia" },
+      { label: "GitHub", url: "https://github.com/mateyyyy/BotSuperDia" },
+      { label: "Twitter", url: "https://x.com/BotDiaAR" },
     ],
     imgClass: "object-cover",
   },
   {
-    name: "Dino IA V2",
+    name: "DinoGoogle RedNeuronal",
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
     images: [
-      "https://github.com/user-attachments/assets/8e6a4815-acc6-4ea3-983c-fa03f3de9a35",
+      "/Dino.gif",
     ],
     description:
-      "Juego del Dino implementado desde cero, con perceptrón multicapa y algoritmos genéticos.",
+      "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
     links: [
-      { label: "GitHub", url: "https://github.com/MatiGimenezD/DinoAiV2" },
+      { label: "GitHub", url: "https://github.com/mateyyyy/DinoAiV2" },
     ],
     imgClass: "object-cover",
   },
@@ -290,20 +291,20 @@ const hobbyProjects = [
     imgClass: "object-cover",
   },
   {
-    name: "SIU Guaraní Calculadora",
+    name: "Extensión Chrome – Calculadora de Promedio para SIU Guaraní (UNViME)",
     subtitle: "Extensión de Chrome en producción",
     tag: "Extension",
-    images: ["/siuguarani.png"],
+    images: ["/extensionsiu.png"],
     description:
-      "Extensión publicada en Chrome Web Store para calcular automáticamente el promedio en SIU Guaraní.",
+      "Creé una extensión de navegador disponible en la Chrome Web Store que resuelve un problema frecuente del sistema SIU Guaraní: el cálculo incorrecto del promedio académico (cuando aparece como 0 o no visible). La extensión detecta automáticamente la sección de “Historia Académica” en el sistema y muestra el promedio en la parte superior de la página, incluso cuando la plataforma falla en calcularlo. Tecnologías utilizadas: JavaScript, HTML, CSS.",
     links: [
       {
         label: "GitHub",
-        url: "https://github.com/MatiGimenezD/SiuGuaraniPromedio",
+        url: "https://github.com/mateyyyy/SiuGuaraniPromedio",
       },
       {
         label: "Chrome Store",
-        url: "https://chromewebstore.google.com/detail/siu-guarani-calculadora-d/mobhhadapaogikeffmlcicmfinnmheeh",
+        url: "https://chromewebstore.google.com/detail/mobhhadapaogikeffmlcicmfinnmheeh",
       },
     ],
     imgClass: "object-contain bg-zinc-950",
@@ -340,8 +341,8 @@ const storyTimeline = [
       "Me interesaba construir proyectos chicos pero concretos que resolvieran problemas reales: automatizar relevamientos de precios y mejorar una herramienta que estudiantes usan todos los dias.",
     solution:
       "Arme un bot de scraping para publicar variaciones de precios y una extension de Chrome para calcular promedios en SIU Guarani de forma automatica.",
-    images: ["/diabot.png", "/siuguarani.png", "/diabot1.png"],
-    image: "/diabot.png",
+    images: ["/botdia.png", "/extensionsiu.png"],
+    image: "/botdia.png",
     isVideo: false,
     color: "#35261d",
   },
@@ -391,7 +392,7 @@ const storyTimeline = [
     solution:
       "Desarrolle dos juegos con IA desde cero: un Dino con evolucion genetica y un Snake con red neuronal para explorar aprendizaje, simulacion y ajuste de heuristicas.",
     images: [
-      "https://github.com/user-attachments/assets/8e6a4815-acc6-4ea3-983c-fa03f3de9a35",
+      "/Dino.gif",
       "/snake.png",
     ],
     image: "/snake.png",
