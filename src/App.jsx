@@ -225,7 +225,10 @@ const mainProjects = [
       "Evento universitario organizado en equipo donde profesionales compartieron sus experiencias laborales.",
     links: [
       { label: "Sitio", url: "https://ingprimerapersona.web.app/" },
-      { label: "GitHub", url: "https://github.com/mateyyyy/ingprimerapersona" },
+      {
+        label: "GitHub",
+        url: "https://github.com/MatiGimenezD/ingprimerapersona",
+      },
     ],
     imgClass: "object-cover",
   },
@@ -240,7 +243,7 @@ const mainProjects = [
       { label: "App", url: "https://will-it-rain-front.vercel.app/" },
       {
         label: "GitHub Backend",
-        url: "https://github.com/mateyyyy/WillItRainBackEnd",
+        url: "https://github.com/MatiGimenezD/WillItRainBackEnd",
       },
     ],
     imgClass: "object-contain bg-zinc-950",
@@ -256,7 +259,7 @@ const hobbyProjects = [
     description:
       "Bot que realizaba scraping automatizado en páginas de supermercado para publicar regularmente la inflación.",
     links: [
-      { label: "GitHub", url: "https://github.com/mateyyyy/BotSuperDia" },
+      { label: "GitHub", url: "https://github.com/MatiGimenezD/BotSuperDia" },
     ],
     imgClass: "object-cover",
   },
@@ -269,7 +272,9 @@ const hobbyProjects = [
     ],
     description:
       "Juego del Dino implementado desde cero, con perceptrón multicapa y algoritmos genéticos.",
-    links: [{ label: "GitHub", url: "https://github.com/mateyyyy/DinoAiV2" }],
+    links: [
+      { label: "GitHub", url: "https://github.com/MatiGimenezD/DinoAiV2" },
+    ],
     imgClass: "object-cover",
   },
   {
@@ -279,7 +284,9 @@ const hobbyProjects = [
     images: ["public/snake.png"],
     description:
       "Snake en Python con red neuronal desde cero para que aprenda a jugar de forma autónoma.",
-    links: [{ label: "GitHub", url: "https://github.com/mateyyyy/SnakeGame" }],
+    links: [
+      { label: "GitHub", url: "https://github.com/MatiGimenezD/SnakeGame" },
+    ],
     imgClass: "object-cover",
   },
   {
@@ -292,7 +299,7 @@ const hobbyProjects = [
     links: [
       {
         label: "GitHub",
-        url: "https://github.com/mateyyyy/SiuGuaraniPromedio",
+        url: "https://github.com/MatiGimenezD/SiuGuaraniPromedio",
       },
       {
         label: "Chrome Store",
@@ -688,7 +695,9 @@ function Navbar({ active }) {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   return (
-    <nav className={`nav-root ${scrolled ? "scrolled" : ""} ${mobileOpen ? "mobile-open" : ""}`}>
+    <nav
+      className={`nav-root ${scrolled ? "scrolled" : ""} ${mobileOpen ? "mobile-open" : ""}`}
+    >
       <div
         className="nav-container"
         style={{
@@ -700,7 +709,7 @@ function Navbar({ active }) {
           alignItems: "center",
           justifyContent: "space-between",
           position: "relative",
-          zIndex: 100
+          zIndex: 100,
         }}
       >
         <button
@@ -711,7 +720,10 @@ function Navbar({ active }) {
         </button>
 
         {/* Desktop Links */}
-        <div className="nav-links-desktop" style={{ display: "flex", alignItems: "center", gap: 28 }}>
+        <div
+          className="nav-links-desktop"
+          style={{ display: "flex", alignItems: "center", gap: 28 }}
+        >
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -734,7 +746,7 @@ function Navbar({ active }) {
         </div>
 
         {/* Mobile Toggle */}
-        <button 
+        <button
           className="nav-mobile-toggle"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
@@ -759,12 +771,18 @@ function Navbar({ active }) {
               className={`nav-mobile-link ${active === item.id ? "active" : ""}`}
               style={{ transitionDelay: `${i * 0.05}s` }}
             >
-              <span className="nav-mobile-num">{String(i + 1).padStart(2, '0')}</span>
+              <span className="nav-mobile-num">
+                {String(i + 1).padStart(2, "0")}
+              </span>
               {item.label}
             </button>
           ))}
           <div className="nav-mobile-footer">
-            <a href="mailto:matiasgimenez452@gmail.com" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+            <a
+              href="mailto:matiasgimenez452@gmail.com"
+              className="btn-primary"
+              style={{ width: "100%", justifyContent: "center" }}
+            >
               Contactame
             </a>
           </div>
@@ -1912,7 +1930,7 @@ function App() {
                 }}
               >
                 <div style={{ color: "var(--ink)" }}>
-                  <GitHubCalendar username="mateyyyy" colorScheme="dark" />
+                  <GitHubCalendar username="MatiGimenezD" colorScheme="dark" />
                 </div>
               </div>
             </section>
@@ -2080,7 +2098,7 @@ function App() {
                       LinkedIn
                     </a>
                     <a
-                      href="https://github.com/mateyyyy"
+                      href="https://github.com/MatiGimenezD"
                       target="_blank"
                       rel="noreferrer"
                       className="btn-ghost"
@@ -2116,7 +2134,7 @@ function App() {
               </span>
               <div style={{ display: "flex", gap: 20 }}>
                 {[
-                  { l: "GitHub", h: "https://github.com/mateyyyy" },
+                  { l: "GitHub", h: "https://github.com/MatiGimenezD" },
                   {
                     l: "LinkedIn",
                     h: "https://www.linkedin.com/in/matias-gimenez-1a7a172bb/",
