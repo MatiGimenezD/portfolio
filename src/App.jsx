@@ -268,14 +268,10 @@ const hobbyProjects = [
     name: "DinoGoogle RedNeuronal",
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
-    images: [
-      "/Dino.gif",
-    ],
+    images: ["/Dino.gif"],
     description:
       "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
-    links: [
-      { label: "GitHub", url: "https://github.com/mateyyyy/DinoAiV2" },
-    ],
+    links: [{ label: "GitHub", url: "https://github.com/mateyyyy/DinoAiV2" }],
     imgClass: "object-cover",
   },
   {
@@ -391,10 +387,7 @@ const storyTimeline = [
       "Quise profundizar en redes neuronales y algoritmos geneticos llevando la teoria a experimentos visuales, iterables y divertidos de entrenar.",
     solution:
       "Desarrolle dos juegos con IA desde cero: un Dino con evolucion genetica y un Snake con red neuronal para explorar aprendizaje, simulacion y ajuste de heuristicas.",
-    images: [
-      "/Dino.gif",
-      "/snake.png",
-    ],
+    images: ["/Dino.gif", "/snake.png"],
     image: "/snake.png",
     isVideo: false,
     color: "#172a24",
