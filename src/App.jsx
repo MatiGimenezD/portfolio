@@ -135,7 +135,8 @@ const _storyProjects = [
       "[← COMPLETAR: qué problema tenía el club antes del sitio? Sin reservas online, sin visibilidad, sin comunicación con socios?]",
     solution:
       "[← COMPLETAR: qué construiste, qué funcionalidades tiene, cómo mejoró la experiencia de los socios]",
-    image: "/clubjudicialvm.com.ar_home.png",
+    images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
+    image: "/clubjudicial1.png",
     isVideo: false,
     color: "#2d2820",
   },
@@ -210,7 +211,7 @@ const mainProjects = [
     name: "Club Judicial VM",
     subtitle: "Portal institucional y comunidad",
     tag: "Web",
-    images: ["/clubjudicialvm.com.ar_home.png"],
+    images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
     description:
       "Sitio institucional con enfoque en contenido, reservas y experiencia para socios.",
     links: [{ label: "Sitio", url: "https://clubjudicialvm.com.ar/" }],
@@ -259,7 +260,7 @@ const hobbyProjects = [
     description:
       "Desarrollé un bot automatizado en Python que analiza diariamente la variación de precios de un conjunto de 82 productos del supermercado Día. El sistema realiza web scraping sobre los productos, guarda los datos en una base de datos local como respaldo y publica automáticamente los resultados en Twitter mediante la API oficial. Tecnologías utilizadas: Python, Web Scraping (BeautifulSoup), Base de datos local (MySQL), Twitter API.",
     links: [
-      { label: "GitHub", url: "https://github.com/mateyyyy/BotSuperDia" },
+      { label: "GitHub", url: "https://github.com/matigimenezd/BotSuperDia" },
       { label: "Twitter", url: "https://x.com/BotDiaAR" },
     ],
     imgClass: "object-cover",
@@ -268,10 +269,10 @@ const hobbyProjects = [
     name: "DinoGoogle RedNeuronal",
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
-    images: ["/Dino.gif"],
+    images: ["https://private-user-images.githubusercontent.com/65136286/504861614-8e6a4815-acc6-4ea3-983c-fa03f3de9a35.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzgxMTY3MjYsIm5iZiI6MTc3ODExNjQyNiwicGF0aCI6Ii82NTEzNjI4Ni81MDQ4NjE2MTQtOGU2YTQ4MTUtYWNjNi00ZWEzLTk4M2MtZmEwM2YzZGU5YTM1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA1MDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNTA3VDAxMTM0NlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTMzMTIxYWQ1NGVmOGZhYmUyMGMyMWU5MTNiODM1NjJhYjFkNjliZjUyYTM4M2JmMDRlY2JmYzczZjRlY2ZhZTEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmdpZiJ9.rnuXW8UFQkppiUhl6fWMEyGmzQnGx4uUZ_spdBilJZQ"],
     description:
       "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
-    links: [{ label: "GitHub", url: "https://github.com/mateyyyy/DinoAiV2" }],
+    links: [{ label: "GitHub", url: "https://github.com/matigimenezd/DinoAiV2" }],
     imgClass: "object-cover",
   },
   {
@@ -290,13 +291,13 @@ const hobbyProjects = [
     name: "Extensión Chrome – Calculadora de Promedio para SIU Guaraní (UNViME)",
     subtitle: "Extensión de Chrome en producción",
     tag: "Extension",
-    images: ["/extensionsiu.png"],
+    images: ["/siuguarani.png"],
     description:
       "Creé una extensión de navegador disponible en la Chrome Web Store que resuelve un problema frecuente del sistema SIU Guaraní: el cálculo incorrecto del promedio académico (cuando aparece como 0 o no visible). La extensión detecta automáticamente la sección de “Historia Académica” en el sistema y muestra el promedio en la parte superior de la página, incluso cuando la plataforma falla en calcularlo. Tecnologías utilizadas: JavaScript, HTML, CSS.",
     links: [
       {
         label: "GitHub",
-        url: "https://github.com/mateyyyy/SiuGuaraniPromedio",
+        url: "https://github.com/matigimenezd/SiuGuaraniPromedio",
       },
       {
         label: "Chrome Store",
@@ -362,7 +363,8 @@ const storyTimeline = [
       "La institucion necesitaba una presencia digital mas clara para comunicar actividades, mejorar la experiencia de sus socios y ordenar mejor el acceso a la informacion.",
     solution:
       "Disene y desarrolle un portal institucional con foco en contenido, estructura clara y una experiencia mas moderna para socios y visitantes.",
-    image: "/clubjudicialvm.com.ar_home.png",
+    images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
+    image: "/clubjudicial1.png",
     isVideo: false,
     color: "#2d2820",
   },
@@ -1395,6 +1397,38 @@ function SectionHeader({ num, label }) {
   );
 }
 
+// ─── GITHUB CALENDAR RESPONSIVE ──────────────────────────────────────────────
+function GitHubCalendarResponsive() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSmall, setIsSmall] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsSmall(window.innerWidth <= 420);
+    };
+    check();
+    window.addEventListener("resize", check, { passive: true });
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const blockSize = isSmall ? 8 : isMobile ? 10 : 12;
+  const blockMargin = isSmall ? 2 : isMobile ? 3 : 4;
+  const fontSize = isSmall ? 11 : isMobile ? 12 : 14;
+
+  return (
+    <div style={{ color: "var(--ink)", width: "100%" }}>
+      <GitHubCalendar
+        username="MatiGimenezD"
+        colorScheme="dark"
+        blockSize={blockSize}
+        blockMargin={blockMargin}
+        fontSize={fontSize}
+      />
+    </div>
+  );
+}
+
 // ─── PEEKING BOT ──────────────────────────────────────────────────────────────
 function PeekingBot() {
   const [isVisible, setIsVisible] = useState(false);
@@ -1807,14 +1841,7 @@ function App() {
               style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
             >
               <SectionHeader num="01" label="Sobre mí" />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1.6fr",
-                  gap: 56,
-                  alignItems: "start",
-                }}
-              >
+              <div className="about-grid">
                 <div className="reveal">
                   <h2
                     style={{
@@ -1914,18 +1941,10 @@ function App() {
               </div>
 
               <div
-                className="reveal reveal-delay-2"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginTop: 56,
-                  overflowX: "auto",
-                  paddingBottom: 16,
-                }}
+                className="reveal reveal-delay-2 github-calendar-wrap"
+                style={{ marginTop: 56 }}
               >
-                <div style={{ color: "var(--ink)" }}>
-                  <GitHubCalendar username="MatiGimenezD" colorScheme="dark" />
-                </div>
+                <GitHubCalendarResponsive />
               </div>
             </section>
 

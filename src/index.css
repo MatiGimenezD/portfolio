@@ -2255,3 +2255,36 @@ body.story-lock {
     background: linear-gradient(to top, var(--cream-alt) 0%, transparent 40%);
   }
 }
+
+/* ─── ABOUT PAGE ─────────────────────────────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 56px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+.github-calendar-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.github-calendar-wrap > div {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .github-calendar-wrap {
+    margin-top: 32px !important;
+  }
+}
