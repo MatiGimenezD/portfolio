@@ -104,7 +104,7 @@ const _storyProjects = [
     problem:
       "Los negocios locales no tenían forma sencilla de vender online sin depender de plataformas caras o complejas. Montar una tienda requería conocimientos técnicos que la mayoría no tenía.",
     solution:
-      "Construí una plataforma que permite crear y gestionar tiendas online en minutos. [← COMPLETAR con detalles técnicos: arquitectura, tecnologías clave, decisiones de diseño]",
+      "Construí una plataforma que permite crear y gestionar tiendas online en minutos.",
     images: ["/SimpleBuyPedidos.png", "/SimpleBuyproductos.png"],
     image: "/SimpleBuyPedidos.png",
     isVideo: false,
@@ -117,7 +117,7 @@ const _storyProjects = [
     problem:
       "Los negocios de turnos (peluquerías, consultorios, estudios) perdían clientes por no poder gestionar citas fuera del horario laboral. El teléfono como único canal era un cuello de botella.",
     solution:
-      "Un SaaS con gestión de turnos automatizada e integración con IA para responder consultas por WhatsApp. [← COMPLETAR con detalles: cómo funciona la IA, qué stack usaste, métricas si tenés]",
+      "Un SaaS con gestión de turnos automatizada e integración con IA para responder consultas por WhatsApp. ",
     images: [
       "/www.citax.com.ar_.png",
       "/www.citax.com.ar_ (1).png",
@@ -129,12 +129,10 @@ const _storyProjects = [
   },
   {
     name: "Club Judicial VM",
-    year: "[← COMPLETAR]",
+    year: "2026",
     tag: "Web",
-    problem:
-      "[← COMPLETAR: qué problema tenía el club antes del sitio? Sin reservas online, sin visibilidad, sin comunicación con socios?]",
-    solution:
-      "[← COMPLETAR: qué construiste, qué funcionalidades tiene, cómo mejoró la experiencia de los socios]",
+    problem: "",
+    solution: "",
     images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
     image: "/clubjudicial1.png",
     isVideo: false,
@@ -144,10 +142,8 @@ const _storyProjects = [
     name: "Ingeniería en Primera Persona",
     year: "2023",
     tag: "Evento",
-    problem:
-      "[← COMPLETAR: qué problema existía para los estudiantes de ingeniería? Falta de contacto con el mundo laboral real?]",
-    solution:
-      "[← COMPLETAR: cómo organizaron el evento, qué impacto tuvo, cuántos asistentes, qué construiste técnicamente para el sitio]",
+    problem: "",
+    solution: "",
     images: ["/ingprimerapersona1.png", "/ingprimerapersona.png"],
     image: "/ingprimerapersona1.png",
     isVideo: false,
@@ -159,8 +155,7 @@ const _storyProjects = [
     tag: "Hackathon",
     problem:
       "La predicción de lluvia hiperlocal era poco accesible para agricultores y personas sin conocimientos meteorológicos. Los datos de la NASA no llegaban a quienes más los necesitaban.",
-    solution:
-      "[← COMPLETAR: qué stack usaron, cómo procesaron los datos de la NASA, qué lograron en el hackathon, resultado/posición]",
+    solution: "",
     images: ["/willitrain.png", "/willitrain1.png"],
     image: "/willitrain.png",
     isVideo: false,
@@ -269,10 +264,14 @@ const hobbyProjects = [
     name: "DinoGoogle RedNeuronal",
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
-    images: ["https://private-user-images.githubusercontent.com/65136286/504861614-8e6a4815-acc6-4ea3-983c-fa03f3de9a35.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzgxMTY3MjYsIm5iZiI6MTc3ODExNjQyNiwicGF0aCI6Ii82NTEzNjI4Ni81MDQ4NjE2MTQtOGU2YTQ4MTUtYWNjNi00ZWEzLTk4M2MtZmEwM2YzZGU5YTM1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA1MDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNTA3VDAxMTM0NlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTMzMTIxYWQ1NGVmOGZhYmUyMGMyMWU5MTNiODM1NjJhYjFkNjliZjUyYTM4M2JmMDRlY2JmYzczZjRlY2ZhZTEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmdpZiJ9.rnuXW8UFQkppiUhl6fWMEyGmzQnGx4uUZ_spdBilJZQ"],
+    images: [
+      "https://private-user-images.githubusercontent.com/65136286/504861614-8e6a4815-acc6-4ea3-983c-fa03f3de9a35.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzgxMTY3MjYsIm5iZiI6MTc3ODExNjQyNiwicGF0aCI6Ii82NTEzNjI4Ni81MDQ4NjE2MTQtOGU2YTQ4MTUtYWNjNi00ZWEzLTk4M2MtZmEwM2YzZGU5YTM1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA1MDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNTA3VDAxMTM0NlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTMzMTIxYWQ1NGVmOGZhYmUyMGMyMWU5MTNiODM1NjJhYjFkNjliZjUyYTM4M2JmMDRlY2JmYzczZjRlY2ZhZTEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmdpZiJ9.rnuXW8UFQkppiUhl6fWMEyGmzQnGx4uUZ_spdBilJZQ",
+    ],
     description:
       "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
-    links: [{ label: "GitHub", url: "https://github.com/matigimenezd/DinoAiV2" }],
+    links: [
+      { label: "GitHub", url: "https://github.com/matigimenezd/DinoAiV2" },
+    ],
     imgClass: "object-cover",
   },
   {
@@ -350,7 +349,7 @@ const storyTimeline = [
     problem:
       "Los negocios locales no tenian forma sencilla de vender online sin depender de plataformas caras o complejas. Montar una tienda requeria conocimientos tecnicos que la mayoria no tenia.",
     solution:
-      "Construi una plataforma que permite crear y gestionar tiendas online en minutos. [COMPLETAR con detalles tecnicos: arquitectura, tecnologias clave, decisiones de diseno]",
+      "Construi una plataforma que permite crear y gestionar tiendas online en minutos.",
     image: "/ReelSimpleBuy10.mp4",
     isVideo: true,
     color: "#2a3a32",
@@ -417,7 +416,7 @@ const storyTimeline = [
     problem:
       "Los negocios de turnos (peluquerias, consultorios, estudios) perdian clientes por no poder gestionar citas fuera del horario laboral. El telefono como unico canal era un cuello de botella.",
     solution:
-      "Un SaaS con gestion de turnos automatizada e integracion con IA para responder consultas por WhatsApp. [COMPLETAR con detalles: como funciona la IA, que stack usaste, metricas si tenes]",
+      "Un SaaS con gestion de turnos automatizada e integracion con IA para responder consultas por WhatsApp. ",
     images: [
       "/www.citax.com.ar_.png",
       "/www.citax.com.ar_ (1).png",
@@ -433,8 +432,7 @@ const storyTimeline = [
     tag: "Hackathon",
     problem:
       "La prediccion de lluvia hiperlocal era poco accesible para agricultores y personas sin conocimientos meteorologicos. Los datos de la NASA no llegaban a quienes mas los necesitaban.",
-    solution:
-      "[COMPLETAR: que stack usaron, como procesaron los datos de la NASA, que lograron en el hackathon, resultado/posicion]",
+    solution: "",
     images: ["/willitrain.png", "/willitrain1.png"],
     image: "/willitrain.png",
     isVideo: false,
