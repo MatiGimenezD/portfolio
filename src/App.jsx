@@ -265,7 +265,7 @@ const hobbyProjects = [
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
     images: [
-      "https://private-user-images.githubusercontent.com/65136286/504861614-8e6a4815-acc6-4ea3-983c-fa03f3de9a35.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzgxMTY3MjYsIm5iZiI6MTc3ODExNjQyNiwicGF0aCI6Ii82NTEzNjI4Ni81MDQ4NjE2MTQtOGU2YTQ4MTUtYWNjNi00ZWEzLTk4M2MtZmEwM2YzZGU5YTM1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA1MDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNTA3VDAxMTM0NlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTMzMTIxYWQ1NGVmOGZhYmUyMGMyMWU5MTNiODM1NjJhYjFkNjliZjUyYTM4M2JmMDRlY2JmYzczZjRlY2ZhZTEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmdpZiJ9.rnuXW8UFQkppiUhl6fWMEyGmzQnGx4uUZ_spdBilJZQ",
+      "https://private-user-images.githubusercontent.com/65136286/504861614-8e6a4815-acc6-4ea3-983c-fa03f3de9a35.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Nzg0Mjk0NjgsIm5iZiI6MTc3ODQyOTE2OCwicGF0aCI6Ii82NTEzNjI4Ni81MDQ4NjE2MTQtOGU2YTQ4MTUtYWNjNi00ZWEzLTk4M2MtZmEwM2YzZGU5YTM1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA1MTAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNTEwVDE2MDYwOFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTY3OWU5MDljODkwZWEzOTNhNjQxY2ZlZTJjNDU1YjU1ZTVhMTE1Y2E0YjZkZDA4ZTg5NjlmZTVjYjAwZTY5NTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmdpZiJ9.-za3yQges2VoXtK4y3M8BMqzBi8aPRCjFUikQb6DCNI",
     ],
     description:
       "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
@@ -499,7 +499,7 @@ const skillNodes = [
     label: "React",
     x: 30,
     y: 25,
-    related: ["javascript", "node", "tailwind"],
+    related: ["javascript", "node", "tailwind", "mui"],
     projects: ["SimpleBuy", "Citax", "Will it Rain"],
   },
   {
@@ -523,7 +523,7 @@ const skillNodes = [
     label: "Node.js",
     x: 52,
     y: 42,
-    related: ["react", "javascript", "express", "mysql", "mongodb", "aws"],
+    related: ["react", "javascript", "express", "mysql", "mongodb"],
     projects: ["SimpleBuy", "Citax", "Will it Rain"],
   },
   {
@@ -551,20 +551,12 @@ const skillNodes = [
     projects: ["Citax"],
   },
   {
-    id: "docker",
-    label: "Docker",
-    x: 68,
-    y: 22,
-    related: ["node", "aws"],
-    projects: ["Citax"],
-  },
-  {
-    id: "aws",
-    label: "AWS",
-    x: 85,
-    y: 25,
-    related: ["docker", "node"],
-    projects: ["SimpleBuy"],
+    id: "mui",
+    label: "Material UI",
+    x: 45,
+    y: 32,
+    related: ["react"],
+    projects: [],
   },
   {
     id: "python",
@@ -1925,9 +1917,8 @@ function App() {
                       "Express",
                       "MySQL",
                       "MongoDB",
-                      "AWS",
                       "REST APIs",
-                      "Docker",
+                      "Material UI",
                       "Prisma",
                     ].map((t) => (
                       <span key={t} className="tech-pill">
