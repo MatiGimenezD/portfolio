@@ -15,6 +15,7 @@ import {
   Preload,
   Text3D,
   Center,
+  useGLTF,
   KeyboardControls,
   useKeyboardControls,
 } from "@react-three/drei";
@@ -2075,6 +2076,12 @@ function CameraController({ activeId, playerPos }) {
   return null;
 }
 
+function Glb3DObject({ url }) {
+  const { scene } = useGLTF(url);
+  const cloned = useMemo(() => scene.clone(), [scene]);
+  return <primitive object={cloned} scale={[0.8, 0.8, 0.8]} />;
+}
+
 const ProjectFrame = React.memo(function ProjectFrame({
   project,
   index,
@@ -2182,11 +2189,21 @@ const ProjectFrame = React.memo(function ProjectFrame({
             <planeGeometry args={[3.2, 3.2 * 0.65 + 0.6]} />
             <meshBasicMaterial color={isActive ? "#e5e3dc" : "#fcfbf8"} />
           </mesh>
-          <SafeImage
-            url={safeImg}
-            scale={[3, 3 * 0.65]}
-            position={[0, 0.2, 0]}
-          />
+          {rawImg.endsWith(".glb") ? (
+            <group position={[0, 0.2, 0.1]}>
+              <Suspense fallback={<FallbackPlane scale={[3, 3 * 0.65]} position={[0, 0, 0]} />}>
+                <Center>
+                  <Glb3DObject url={safeImg} />
+                </Center>
+              </Suspense>
+            </group>
+          ) : (
+            <SafeImage
+              url={safeImg}
+              scale={[3, 3 * 0.65]}
+              position={[0, 0.2, 0]}
+            />
+          )}
           <Text
             position={[0, -1.1, 0]}
             fontSize={0.25}
@@ -2715,10 +2732,10 @@ export default function Story3D({ projects, active, onClose }) {
           </div>
         )}
 
-        {/* ── Canvas: frameloop="demand" → only renders when invalidate() called — */}
+        {/* ── Canvas: frameloop="always" for smooth rendering without black screen — */}
         <Canvas
           orthographic
-          frameloop="demand"
+          frameloop="always"
           camera={{ position: [15, 15, 20], zoom: 50, near: -100, far: 100 }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setActiveId(null);

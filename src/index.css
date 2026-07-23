@@ -615,6 +615,80 @@ body::after {
 }
 
 /* ─── SKILL NODE ─────────────────────────────────────────────────────────── */
+.furniture-viewer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 34%),
+    #11110f;
+}
+
+.furniture-viewer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  opacity: 0.48;
+}
+
+.furniture-viewer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(13, 12, 11, 0.52)),
+    radial-gradient(ellipse at 50% 42%, transparent 44%, rgba(0, 0, 0, 0.34) 100%);
+}
+
+.furniture-viewer canvas {
+  position: relative;
+  z-index: 0;
+}
+
+.furniture-viewer-label {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 28px);
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(13, 12, 11, 0.72);
+  color: var(--ink-mid);
+  font-size: 11px;
+  line-height: 1;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+.furniture-viewer-label span + span {
+  color: var(--ink-faint);
+}
+
+.proj-card-3d .proj-card-media {
+  min-height: 460px;
+}
+
+.proj-card-3d:hover .proj-card-media {
+  transform: translateY(-4px);
+}
+
 .skill-node {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -1049,6 +1123,12 @@ a, button { cursor: pointer; }
   .proj-card-media,
   .proj-card-media .project-img-wrap {
     min-height: 240px;
+  }
+
+  .proj-card-3d .proj-card-media,
+  .proj-card-3d .project-img-wrap,
+  .proj-card-3d .furniture-viewer {
+    min-height: 320px;
   }
 }
 

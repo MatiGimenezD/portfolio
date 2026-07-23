@@ -5,11 +5,14 @@ import {
   useCallback,
   lazy,
   Suspense,
+  useMemo,
 } from "react";
 import Lenis from "lenis";
 import { GitHubCalendar } from "react-github-calendar";
-
-const Story3D = lazy(() => import("./Story3D"));
+import { Canvas } from "@react-three/fiber";
+import { ContactShadows, OrbitControls, useGLTF } from "@react-three/drei";
+import * as THREE from "three";
+import Story3D from "./Story3D";
 
 // ─── CUSTOM CURSOR ────────────────────────────────────────────────────────────
 function CustomCursor() {
@@ -264,9 +267,7 @@ const hobbyProjects = [
     name: "DinoGoogle RedNeuronal",
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
-    images: [
-      "https://private-user-images.githubusercontent.com/65136286/504861614-8e6a4815-acc6-4ea3-983c-fa03f3de9a35.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3Nzg0Mjk0NjgsIm5iZiI6MTc3ODQyOTE2OCwicGF0aCI6Ii82NTEzNjI4Ni81MDQ4NjE2MTQtOGU2YTQ4MTUtYWNjNi00ZWEzLTk4M2MtZmEwM2YzZGU5YTM1LmdpZj9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjA1MTAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwNTEwVDE2MDYwOFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTY3OWU5MDljODkwZWEzOTNhNjQxY2ZlZTJjNDU1YjU1ZTVhMTE1Y2E0YjZkZDA4ZTg5NjlmZTVjYjAwZTY5NTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnJlc3BvbnNlLWNvbnRlbnQtdHlwZT1pbWFnZSUyRmdpZiJ9.-za3yQges2VoXtK4y3M8BMqzBi8aPRCjFUikQb6DCNI",
-    ],
+    images: ["/dino.gif"],
     description:
       "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
     links: [
@@ -278,7 +279,7 @@ const hobbyProjects = [
     name: "Snake Game AI",
     subtitle: "Juego clásico + Red Neuronal",
     tag: "IA",
-    images: ["public/snake.png"],
+    images: ["/snake.png"],
     description:
       "Snake en Python con red neuronal desde cero para que aprenda a jugar de forma autónoma.",
     links: [
@@ -305,6 +306,16 @@ const hobbyProjects = [
     ],
     imgClass: "object-contain bg-zinc-950",
   },
+  {
+    name: "Parametrización de Muebles en SketchUp",
+    subtitle: "Diseño 3D & Modelado Paramétrico",
+    tag: "3D",
+    images: ["/Modulos Parametrizados.glb"],
+    description:
+      "Desarrollé el modelado 3D y la parametrización de mobiliario en SketchUp. Permite visualizar e interactuar en 3D en tiempo real con el diseño del mueble desde la web.",
+    links: [],
+    imgClass: "object-cover",
+  },
 ];
 
 const additionalProjects = [
@@ -324,6 +335,15 @@ const additionalProjects = [
     description:
       "Sitio corporativo para servicios de consultoría estratégica y mejora continua.",
     url: "https://www.consultorapuertadeaugusta.com.ar/",
+    imgClass: "object-cover",
+  },
+  {
+    name: "CTMI S.A.S. - Soporte Técnico Industrial",
+    tag: "Industrial",
+    images: ["/www.ctmi.com.ar_.png", "/www.ctmi.com.ar_ (1).png"],
+    description:
+      "Sitio web para CTMI S.A.S. (Villa Mercedes), empresa especializada en soporte técnico industrial, mantenimiento electromecánico, automatización y tableros eléctricos.",
+    url: "https://www.ctmi.com.ar/",
     imgClass: "object-cover",
   },
 ];
@@ -388,22 +408,24 @@ const storyTimeline = [
       "Quise profundizar en redes neuronales y algoritmos geneticos llevando la teoria a experimentos visuales, iterables y divertidos de entrenar.",
     solution:
       "Desarrolle dos juegos con IA desde cero: un Dino con evolucion genetica y un Snake con red neuronal para explorar aprendizaje, simulacion y ajuste de heuristicas.",
-    images: ["/Dino.gif", "/snake.png"],
-    image: "/snake.png",
+    images: ["/dino.gif", "/snake.png"],
+    image: "/dino.gif",
     isVideo: false,
     color: "#172a24",
   },
   {
-    name: "Saber Raiz + Puerta de Augusta",
+    name: "Saber Raiz + Puerta de Augusta + CTMI",
     year: "2025",
     tag: "Landings",
     problem:
-      "Dos marcas muy distintas necesitaban presencia web clara y profesional, con foco en identidad, confianza y conversion desde el primer scroll.",
+      "Marcas de distintos rubros necesitaban presencia web clara y profesional, con foco en identidad, confianza y conversión desde el primer scroll.",
     solution:
-      "Construi landings con una narrativa visual mas cuidada, priorizando jerarquia de contenido, producto y servicios para comunicar mejor cada propuesta.",
+      "Construí landings con una narrativa visual cuidada (Saber Raíz, Consultora Puerta de Augusta, CTMI), priorizando jerarquía de contenido y conversión.",
     images: [
       "/www.saberraiz.com.ar_.png",
       "/www.consultorapuertadeaugusta.com.ar_.png",
+      "/www.ctmi.com.ar_.png",
+      "/www.ctmi.com.ar_ (1).png",
     ],
     image: "/www.saberraiz.com.ar_.png",
     isVideo: false,
@@ -907,20 +929,130 @@ function SkillSynergyNetwork() {
   );
 }
 
+// ─── 3D GLB MODEL VIEWER ──────────────────────────────────────────────────────
+function GlbModelInternal({ url }) {
+  const { scene } = useGLTF(url);
+  const model = useMemo(() => scene.clone(true), [scene]);
+  const { center, scale } = useMemo(() => {
+    const box = new THREE.Box3().setFromObject(model);
+    const size = new THREE.Vector3();
+    const boxCenter = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(boxCenter);
+
+    const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+    return {
+      center: boxCenter,
+      scale: 5 / maxAxis,
+    };
+  }, [model]);
+
+  useEffect(() => {
+    model.traverse((child) => {
+      if (!child.isMesh) return;
+      child.castShadow = true;
+      child.receiveShadow = true;
+      if (child.material) {
+        child.material.roughness = Math.max(
+          child.material.roughness ?? 0.55,
+          0.5,
+        );
+      }
+    });
+  }, [model]);
+
+  return (
+    <group
+      scale={scale}
+      position={[
+        -center.x * scale,
+        -center.y * scale + 0.15,
+        -center.z * scale,
+      ]}
+      rotation={[0, -0.35, 0]}
+    >
+      <primitive object={model} />
+    </group>
+  );
+}
+
+function GlbCanvas({ url }) {
+  return (
+    <div
+      className="furniture-viewer"
+      onClick={(e) => e.stopPropagation()}
+      data-lenis-prevent
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <Canvas
+        shadows
+        dpr={[1, 1.75]}
+        camera={{ position: [4.2, 2.5, 5.2], fov: 34, near: 0.1, far: 100 }}
+      >
+        <color attach="background" args={["#11110f"]} />
+        <ambientLight intensity={0.9} />
+        <hemisphereLight args={["#f0ece1", "#14120f", 1.2]} />
+        <directionalLight
+          position={[4, 7, 5]}
+          intensity={2.4}
+          castShadow
+          shadow-mapSize={[1024, 1024]}
+        />
+        <directionalLight position={[-4, 3, -3]} intensity={0.55} />
+        <Suspense fallback={null}>
+          <GlbModelInternal url={url} />
+          <ContactShadows
+            position={[0, -1.32, 0]}
+            opacity={0.42}
+            scale={7}
+            blur={2.4}
+            far={4}
+          />
+        </Suspense>
+        <mesh
+          rotation={[-Math.PI / 2, 0, 0]}
+          position={[0, -1.34, 0]}
+          receiveShadow
+        >
+          <circleGeometry args={[3.2, 96]} />
+          <meshStandardMaterial color="#1b1a17" roughness={0.92} />
+        </mesh>
+        <OrbitControls
+          makeDefault
+          autoRotate
+          autoRotateSpeed={0.55}
+          enablePan={false}
+          enableZoom={false}
+          minDistance={4.5}
+          maxDistance={7.5}
+          minPolarAngle={Math.PI / 4}
+          maxPolarAngle={Math.PI / 2.05}
+          target={[0, 0.05, 0]}
+        />
+      </Canvas>
+      <div className="furniture-viewer-label">
+        <span>3D Interactivo · Arrastrá para rotar</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── IMAGE SLIDER ─────────────────────────────────────────────────────────────
 function ProjectImageSlider({ images, onOpenGallery }) {
   const [idx, setIdx] = useState(0);
   const isVideo = images[0]?.endsWith(".mp4");
+  const isGlb = images[idx]?.endsWith(".glb");
 
   useEffect(() => {
     setIdx(0);
   }, [images]);
 
   useEffect(() => {
-    if (isVideo || images.length <= 1) return;
+    if (isVideo || isGlb || images.length <= 1) return;
     const t = setInterval(() => setIdx((p) => (p + 1) % images.length), 3200);
     return () => clearInterval(t);
-  }, [images.length, isVideo]);
+  }, [images.length, isVideo, isGlb]);
+
   const resolve = (p) => {
     if (p.startsWith("http")) return p;
     const clean = p.startsWith("/public/")
@@ -940,11 +1072,13 @@ function ProjectImageSlider({ images, onOpenGallery }) {
         height: 220,
         overflow: "hidden",
         background: "var(--cream-alt)",
-        cursor: "pointer",
+        cursor: isGlb ? "default" : "pointer",
       }}
-      onClick={() => onOpenGallery(images)}
+      onClick={() => !isGlb && onOpenGallery(images)}
     >
-      {isVideo ? (
+      {isGlb ? (
+        <GlbCanvas url={resolve(images[idx])} />
+      ) : isVideo ? (
         <video
           src={resolve(images[0])}
           muted
@@ -962,7 +1096,7 @@ function ProjectImageSlider({ images, onOpenGallery }) {
           className="img-zoom"
         />
       )}
-      {images.length > 1 && !isVideo && (
+      {images.length > 1 && !isVideo && !isGlb && (
         <>
           <button
             type="button"
@@ -986,7 +1120,7 @@ function ProjectImageSlider({ images, onOpenGallery }) {
           </button>
         </>
       )}
-      {images.length > 1 && !isVideo && (
+      {images.length > 1 && !isVideo && !isGlb && (
         <div className="slider-dots">
           {images.map((_, i) => (
             <div
@@ -1333,7 +1467,18 @@ function MediaModal({ mediaModal, setMediaModal }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {mediaModal[modalIndex].endsWith(".mp4") ? (
+        {mediaModal[modalIndex].endsWith(".glb") ? (
+          <div
+            style={{
+              width: "85vw",
+              height: "75vh",
+              maxWidth: 900,
+              height: 500,
+            }}
+          >
+            <GlbCanvas url={resolve(mediaModal[modalIndex])} />
+          </div>
+        ) : mediaModal[modalIndex].endsWith(".mp4") ? (
           <video
             key={mediaModal[modalIndex]}
             src={resolve(mediaModal[modalIndex])}
@@ -1738,55 +1883,155 @@ function Featured3D({ onStartStory }) {
   );
 }
 
+// ─── 3D FEATURE BLOCK (mueble sin tarjeta, full-width) ───────────────────────
+function GlbFeatureBlock({ project }) {
+  const resolve = (p) => {
+    if (p.startsWith("http")) return p;
+    const clean = p.startsWith("/public/")
+      ? p.slice(8)
+      : p.startsWith("public/")
+        ? p.slice(7)
+        : p.startsWith("/")
+          ? p.slice(1)
+          : p;
+    return import.meta.env.BASE_URL + encodeURI(clean);
+  };
+  const glbUrl = project.images.find((img) => img.endsWith(".glb"));
+  return (
+    <div className="reveal" style={{ marginBottom: 48 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 16,
+        }}
+      >
+        <span className="tag-pill sage">{project.tag}</span>
+        {project.year && (
+          <span style={{ fontSize: 12, color: "var(--ink-faint)" }}>
+            {project.year}
+          </span>
+        )}
+      </div>
+      <h3
+        style={{
+          fontFamily: "var(--font-display)",
+          fontSize: 22,
+          fontWeight: 600,
+          color: "var(--ink)",
+          marginBottom: 8,
+        }}
+      >
+        {project.name}
+      </h3>
+      {project.subtitle && (
+        <p
+          style={{
+            fontSize: 12,
+            color: "var(--ink-muted)",
+            marginBottom: 12,
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+          }}
+        >
+          {project.subtitle}
+        </p>
+      )}
+      {project.description && (
+        <p
+          style={{
+            fontSize: 14,
+            lineHeight: 1.7,
+            color: "var(--ink-mid)",
+            marginBottom: 20,
+            maxWidth: 680,
+          }}
+        >
+          {project.description}
+        </p>
+      )}
+      <div
+        style={{
+          width: "100%",
+          height: 480,
+          borderRadius: 12,
+          overflow: "hidden",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <GlbCanvas url={resolve(glbUrl)} />
+      </div>
+    </div>
+  );
+}
+
 // ─── PROJECT GRID ──────────────────────────────────────────────────
 function ProjectGrid({ projects, onOpenMedia }) {
+  const regularProjects = projects.filter(
+    (p) => !p.images.some((img) => img.endsWith(".glb")),
+  );
+  const glbProjects = projects.filter((p) =>
+    p.images.some((img) => img.endsWith(".glb")),
+  );
+
   return (
-    <div className="proj-grid">
-      {projects.map((p, i) => (
-        <article
-          key={p.name}
-          className="proj-card reveal"
-          style={{ transitionDelay: `${i * 0.07}s` }}
-        >
-          <div className="proj-card-media">
-            <ProjectImageSlider images={p.images} onOpenGallery={onOpenMedia} />
-          </div>
-          <div className="proj-card-body">
-            <div className="proj-card-header">
-              <span className="tag-pill sage">{p.tag}</span>
-              <span className="proj-card-year">{p.year || ""}</span>
-            </div>
-            <h3 className="proj-card-name">{p.name}</h3>
-            <p className="proj-card-sub">{p.subtitle}</p>
-            <p className="proj-card-desc">{p.description}</p>
-            <div className="proj-card-links">
-              {p.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-ghost"
-                  style={{ fontSize: 12, padding: "8px 16px" }}
-                >
-                  {link.label}
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  >
-                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          </div>
-        </article>
+    <>
+      {glbProjects.map((p) => (
+        <GlbFeatureBlock key={p.name} project={p} />
       ))}
-    </div>
+      {regularProjects.length > 0 && (
+        <div className="proj-grid">
+          {regularProjects.map((p, i) => (
+            <article
+              key={p.name}
+              className="proj-card reveal"
+              style={{ transitionDelay: `${i * 0.07}s` }}
+            >
+              <div className="proj-card-media">
+                <ProjectImageSlider
+                  images={p.images}
+                  onOpenGallery={onOpenMedia}
+                />
+              </div>
+              <div className="proj-card-body">
+                <div className="proj-card-header">
+                  <span className="tag-pill sage">{p.tag}</span>
+                  <span className="proj-card-year">{p.year || ""}</span>
+                </div>
+                <h3 className="proj-card-name">{p.name}</h3>
+                <p className="proj-card-sub">{p.subtitle}</p>
+                <p className="proj-card-desc">{p.description}</p>
+                <div className="proj-card-links">
+                  {p.links.map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn-ghost"
+                      style={{ fontSize: 12, padding: "8px 16px" }}
+                    >
+                      {link.label}
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                      >
+                        <path d="M7 17L17 7M17 7H7M17 7V17" />
+                      </svg>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -2009,7 +2254,7 @@ function App() {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                   gap: 24,
                   marginTop: 8,
                 }}
