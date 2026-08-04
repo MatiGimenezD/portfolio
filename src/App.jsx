@@ -12,27 +12,36 @@ import { GitHubCalendar } from "react-github-calendar";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import Story3D from "./Story3D";
+const Story3D = lazy(() => import("./Story3D"));
+const loadStory3D = () => import("./Story3D");
 
 // ─── CUSTOM CURSOR ────────────────────────────────────────────────────────────
 function CustomCursor() {
   const cursorRef = useRef(null);
   const trailRef = useRef([]);
   const posRef = useRef({ x: -100, y: -100 });
+  const mouseRef = useRef({ x: -100, y: -100 });
   const rafRef = useRef(null);
+  const isAnimatingRef = useRef(false);
 
   useEffect(() => {
     const cursor = cursorRef.current;
     const trails = trailRef.current;
-    let mouseX = -100,
-      mouseY = -100;
     const hoverSelectors = "a, button, .project-img-wrap";
 
     const isHoverTarget = (el) => el && el.closest(hoverSelectors);
 
+    const startAnimation = () => {
+      if (!isAnimatingRef.current) {
+        isAnimatingRef.current = true;
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+
     const onMove = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
+      startAnimation();
     };
     const onOver = (e) => {
       if (isHoverTarget(e.target)) {
@@ -46,15 +55,17 @@ function CustomCursor() {
     };
     const onDown = () => document.body.classList.add("cursor-down");
     const onUp = () => document.body.classList.remove("cursor-down");
-    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
     document.addEventListener("mouseover", onOver);
     document.addEventListener("mouseout", onOut);
     document.addEventListener("mousedown", onDown);
     document.addEventListener("mouseup", onUp);
 
     const animate = () => {
-      posRef.current.x += (mouseX - posRef.current.x) * 0.18;
-      posRef.current.y += (mouseY - posRef.current.y) * 0.18;
+      const dx = mouseRef.current.x - posRef.current.x;
+      const dy = mouseRef.current.y - posRef.current.y;
+      posRef.current.x += dx * 0.18;
+      posRef.current.y += dy * 0.18;
       if (cursor) {
         cursor.style.transform = `translate(${posRef.current.x - 4}px, ${posRef.current.y - 4}px)`;
       }
@@ -68,9 +79,14 @@ function CustomCursor() {
           dot.style.transitionDelay = `${delay}s`;
         }
       });
-      rafRef.current = requestAnimationFrame(animate);
+
+      if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
+        isAnimatingRef.current = false;
+        rafRef.current = null;
+      } else {
+        rafRef.current = requestAnimationFrame(animate);
+      }
     };
-    rafRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
@@ -78,7 +94,7 @@ function CustomCursor() {
       document.removeEventListener("mouseout", onOut);
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("mouseup", onUp);
-      cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
@@ -624,7 +640,10 @@ function useScrollReveal() {
     const obs = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add("visible");
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            obs.unobserve(e.target);
+          }
         }),
       { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
     );
@@ -663,14 +682,21 @@ function useTypingEffect(words, speed = 80, deleteSpeed = 45, pause = 2000) {
 function useActiveSection() {
   const [active, setActive] = useState("");
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY + 120;
-      let current = "";
-      navItems.forEach((n) => {
-        const s = document.getElementById(n.id);
-        if (s && s.offsetTop <= scrollY) current = s.id;
-      });
-      setActive(current);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY + 120;
+          let current = "";
+          navItems.forEach((n) => {
+            const s = document.getElementById(n.id);
+            if (s && s.offsetTop <= scrollY) current = s.id;
+          });
+          setActive(current);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -977,59 +1003,76 @@ function GlbModelInternal({ url }) {
 }
 
 function GlbCanvas({ url }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.05 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       className="furniture-viewer"
       onClick={(e) => e.stopPropagation()}
       data-lenis-prevent
       onWheel={(e) => e.stopPropagation()}
     >
-      <Canvas
-        shadows
-        dpr={[1, 1.75]}
-        camera={{ position: [4.2, 2.5, 5.2], fov: 34, near: 0.1, far: 100 }}
-      >
-        <color attach="background" args={["#11110f"]} />
-        <ambientLight intensity={0.9} />
-        <hemisphereLight args={["#f0ece1", "#14120f", 1.2]} />
-        <directionalLight
-          position={[4, 7, 5]}
-          intensity={2.4}
-          castShadow
-          shadow-mapSize={[1024, 1024]}
-        />
-        <directionalLight position={[-4, 3, -3]} intensity={0.55} />
-        <Suspense fallback={null}>
-          <GlbModelInternal url={url} />
-          <ContactShadows
-            position={[0, -1.32, 0]}
-            opacity={0.42}
-            scale={7}
-            blur={2.4}
-            far={4}
-          />
-        </Suspense>
-        <mesh
-          rotation={[-Math.PI / 2, 0, 0]}
-          position={[0, -1.34, 0]}
-          receiveShadow
+      {isVisible && (
+        <Canvas
+          shadows
+          dpr={[1, 1.5]}
+          camera={{ position: [4.2, 2.5, 5.2], fov: 34, near: 0.1, far: 100 }}
         >
-          <circleGeometry args={[3.2, 96]} />
-          <meshStandardMaterial color="#1b1a17" roughness={0.92} />
-        </mesh>
-        <OrbitControls
-          makeDefault
-          autoRotate
-          autoRotateSpeed={0.55}
-          enablePan={false}
-          enableZoom={false}
-          minDistance={4.5}
-          maxDistance={7.5}
-          minPolarAngle={Math.PI / 4}
-          maxPolarAngle={Math.PI / 2.05}
-          target={[0, 0.05, 0]}
-        />
-      </Canvas>
+          <color attach="background" args={["#11110f"]} />
+          <ambientLight intensity={0.9} />
+          <hemisphereLight args={["#f0ece1", "#14120f", 1.2]} />
+          <directionalLight
+            position={[4, 7, 5]}
+            intensity={2.4}
+            castShadow
+            shadow-mapSize={[1024, 1024]}
+          />
+          <directionalLight position={[-4, 3, -3]} intensity={0.55} />
+          <Suspense fallback={null}>
+            <GlbModelInternal url={url} />
+            <ContactShadows
+              position={[0, -1.32, 0]}
+              opacity={0.42}
+              scale={7}
+              blur={2.4}
+              far={4}
+            />
+          </Suspense>
+          <mesh
+            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, -1.34, 0]}
+            receiveShadow
+          >
+            <circleGeometry args={[3.2, 96]} />
+            <meshStandardMaterial color="#1b1a17" roughness={0.92} />
+          </mesh>
+          <OrbitControls
+            makeDefault
+            autoRotate
+            autoRotateSpeed={0.55}
+            enablePan={false}
+            enableZoom={false}
+            minDistance={4.5}
+            maxDistance={7.5}
+            minPolarAngle={Math.PI / 4}
+            maxPolarAngle={Math.PI / 2.05}
+            target={[0, 0.05, 0]}
+          />
+        </Canvas>
+      )}
       <div className="furniture-viewer-label">
         <span>3D Interactivo · Arrastrá para rotar</span>
       </div>
@@ -1085,6 +1128,7 @@ function ProjectImageSlider({ images, onOpenGallery }) {
           loop
           autoPlay
           playsInline
+          preload="metadata"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           className="img-zoom"
         />
@@ -1092,6 +1136,8 @@ function ProjectImageSlider({ images, onOpenGallery }) {
         <img
           src={resolve(images[idx])}
           alt=""
+          loading="lazy"
+          decoding="async"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           className="img-zoom"
         />
@@ -1569,21 +1615,14 @@ function PeekingBot() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const hobbySection = document.getElementById("hobby");
-      if (hobbySection) {
-        const rect = hobbySection.getBoundingClientRect();
-        // Visible when the hobby section is roughly in the middle of the screen
-        const isNear =
-          rect.top < window.innerHeight * 0.7 &&
-          rect.bottom > window.innerHeight * 0.3;
-        setIsVisible(isNear);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    const hobbySection = document.getElementById("hobby");
+    if (!hobbySection) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+    obs.observe(hobbySection);
+    return () => obs.disconnect();
   }, []);
 
   const resolve = (p) => {
@@ -1845,7 +1884,12 @@ function Featured3D({ onStartStory }) {
         padding: "0 32px",
       }}
     >
-      <div className="featured-3d-container" onClick={onStartStory}>
+      <div
+        className="featured-3d-container"
+        onClick={onStartStory}
+        onMouseEnter={loadStory3D}
+        onFocus={loadStory3D}
+      >
         <div className="featured-3d-content">
           <div className="featured-3d-tag">Experiencia Inmersiva</div>
           <h2 className="featured-3d-title">Explora mi Portfolio en 3D</h2>
@@ -1854,7 +1898,7 @@ function Featured3D({ onStartStory }) {
             Este espacio representa el lugar donde me formé y donde nacieron las
             ideas que hoy son realidad.
           </p>
-          <button className="featured-3d-btn">
+          <button className="featured-3d-btn" onMouseEnter={loadStory3D}>
             Entrar al Mundo 3D
             <svg
               width="18"
@@ -1875,6 +1919,8 @@ function Featured3D({ onStartStory }) {
             src={import.meta.env.BASE_URL + "preview3d.png"}
             alt="3D Portfolio Preview"
             className="featured-3d-img"
+            loading="lazy"
+            decoding="async"
           />
           <div className="featured-3d-overlay" />
         </div>

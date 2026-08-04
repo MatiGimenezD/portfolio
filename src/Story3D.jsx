@@ -2735,12 +2735,13 @@ export default function Story3D({ projects, active, onClose }) {
         {/* ── Canvas: frameloop="always" for smooth rendering without black screen — */}
         <Canvas
           orthographic
+          dpr={[1, Math.min(window.devicePixelRatio || 1, 1.5)]}
           frameloop="always"
           camera={{ position: [15, 15, 20], zoom: 50, near: -100, far: 100 }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setActiveId(null);
           }}
-          gl={{ antialias: true, maxTextureSize: 2048 }}
+          gl={{ antialias: true, maxTextureSize: 2048, powerPreference: "high-performance" }}
         >
           <color attach="background" args={["#0d0c0b"]} />
           <fog attach="fog" args={["#0d0c0b", 30, 90]} />
