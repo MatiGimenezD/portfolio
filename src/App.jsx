@@ -201,43 +201,66 @@ const mainProjects = [
     name: "SimpleBuy",
     subtitle: "Plataforma para crear tiendas online",
     tag: "Back-End",
+    category: "backend",
+    status: { type: "live", label: "En Producción" },
+    metrics: ["Multi-tienda", "Gestión de pedidos", "API RESTful"],
+    problem: "Los comercios locales carecían de una forma ágil de vender en línea sin depender de plataformas costosas.",
+    solution: "Plataforma web con backend ágil, catálogo automatizado y panel de administración.",
+    architecture: "Node.js, Express, MySQL, HTML5/CSS3. Enfoque en mantenibilidad, escalabilidad de inventarios y bajo tiempo de respuesta.",
     images: ["/ReelSimpleBuy10.mp4"],
-    description:
-      "Proyecto Back-End orientado a facilitar la creación y gestión de tiendas online para negocios.",
+    description: "Proyecto Back-End orientado a facilitar la creación y gestión de tiendas online para negocios.",
     links: [{ label: "Sitio", url: "https://simplebuy.com.ar/home" }],
+    displayUrl: "https://simplebuy.com.ar",
     imgClass: "bg-zinc-950",
   },
   {
     name: "Citax",
     subtitle: "Gestión de citas y automatización con IA",
     tag: "SaaS",
+    category: "backend",
+    status: { type: "live", label: "En Producción" },
+    metrics: ["IA Agent WhatsApp", "Turnos 24/7", "Multi-usuario"],
+    problem: "Pérdida de clientes en centros de salud y estética por falta de atención fuera de horario laboral.",
+    solution: "SaaS multi-usuario con motor de reservas y agente de IA integrado a WhatsApp.",
+    architecture: "Node.js, Express, MongoDB, IA Agents API. Lógica de negocio compleja, sincronización de turnos y mensajería en tiempo real.",
     images: [
       "/www.citax.com.ar_.png",
       "/www.citax.com.ar_ (1).png",
       "/citaxchatwsp.png",
     ],
-    description:
-      "Demuestra lógica de negocio compleja, turnos, usuarios y foco en mantenibilidad y escalabilidad.",
+    description: "Demuestra lógica de negocio compleja, turnos, usuarios y foco en mantenibilidad y escalabilidad.",
     links: [{ label: "Sitio", url: "https://www.citax.com.ar/" }],
+    displayUrl: "https://www.citax.com.ar",
     imgClass: "object-cover",
   },
   {
     name: "Club Judicial VM",
     subtitle: "Portal institucional y comunidad",
     tag: "Web",
+    category: "web",
+    status: { type: "live", label: "En Producción" },
+    metrics: ["Gestión de Socios", "Reservas de instalaciones"],
+    problem: "Falta de centralización para actividades y reservas institucionales para socios.",
+    solution: "Portal institucional moderno con catálogo de actividades, noticias y sistema de contacto.",
+    architecture: "JavaScript, HTML5, CSS3, integración de formularios. UX accesible para socios.",
     images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
-    description:
-      "Sitio institucional con enfoque en contenido, reservas y experiencia para socios.",
+    description: "Sitio institucional con enfoque en contenido, reservas y experiencia para socios.",
     links: [{ label: "Sitio", url: "https://clubjudicialvm.com.ar/" }],
+    displayUrl: "https://clubjudicialvm.com.ar",
     imgClass: "object-cover",
   },
   {
     name: "Ingeniería en Primera Persona",
     subtitle: "Charlas de profesionales para estudiantes",
     tag: "Evento",
+    category: "web",
+    status: { type: "open", label: "Evento" },
+    metrics: ["+300 Asistentes", "Landing Eventos"],
+    problem: "Desconexión entre estudiantes universitarios y profesionales de la industria laboral.",
+    solution: "Landing page del evento para difusión, agenda de conferencistas e inscripciones.",
+    architecture: "React, Firebase Web Hosting. Despliegue continuo y alta velocidad de carga.",
     images: ["/ingprimerapersona1.png", "/ingprimerapersona.png"],
-    description:
-      "Evento universitario organizado en equipo donde profesionales compartieron sus experiencias laborales.",
+    description: "Evento universitario organizado en equipo donde profesionales compartieron sus experiencias laborales.",
     links: [
       { label: "Sitio", url: "https://ingprimerapersona.web.app/" },
       {
@@ -245,15 +268,21 @@ const mainProjects = [
         url: "https://github.com/MatiGimenezD/ingprimerapersona",
       },
     ],
+    displayUrl: "https://ingprimerapersona.web.app",
     imgClass: "object-cover",
   },
   {
     name: "NASA Space Apps",
     subtitle: "Desafío Will it Rain",
     tag: "Hackathon",
+    category: "ia",
+    status: { type: "open", label: "NASA Hackathon" },
+    metrics: ["Datos NASA GPM", "Predicción hiperlocal"],
+    problem: "Falta de accesibilidad a datos meteorológicos complejos para agricultores locales.",
+    solution: "Modelado y backend para procesar precipitación hiperlocal e interfaz intuitiva.",
+    architecture: "Backend Python/Node.js + REST API. Procesamiento de datasets espaciales.",
     images: ["/willitrain.png", "/willitrain1.png"],
-    description:
-      "Hackathon internacional de la NASA: predicción y visualización meteorológica.",
+    description: "Hackathon internacional de la NASA: predicción y visualización meteorológica.",
     links: [
       { label: "App", url: "https://will-it-rain-front.vercel.app/" },
       {
@@ -261,6 +290,7 @@ const mainProjects = [
         url: "https://github.com/MatiGimenezD/WillItRainBackEnd",
       },
     ],
+    displayUrl: "https://will-it-rain-front.vercel.app",
     imgClass: "object-contain bg-zinc-950",
   },
 ];
@@ -270,46 +300,73 @@ const hobbyProjects = [
     name: "Bot de Twitter – Variación diaria de precios de Día (BotSuperDia)",
     subtitle: "Web Scraping y Automatización",
     tag: "Bot",
+    category: "ia",
+    status: { type: "open", label: "  Bot en Twitter" },
+    metrics: ["82 productos rastreados", "Scraping diario", "MySQL Storage"],
+    problem: "Analizar la variación de precios de supermercados en contexto inflacionario de forma automática.",
+    solution: "Bot autónomo en Python que extrae precios diariamente con BeautifulSoup, almacena en MySQL y postea resúmenes en Twitter vía API.",
+    architecture: "Python, BeautifulSoup4, MySQL DB, Twitter API v2. Ejecución programada (CRON).",
     images: ["/botdia.png"],
     description:
-      "Desarrollé un bot automatizado en Python que analiza diariamente la variación de precios de un conjunto de 82 productos del supermercado Día. El sistema realiza web scraping sobre los productos, guarda los datos en una base de datos local como respaldo y publica automáticamente los resultados en Twitter mediante la API oficial. Tecnologías utilizadas: Python, Web Scraping (BeautifulSoup), Base de datos local (MySQL), Twitter API.",
+      "Desarrollé un bot automatizado en Python que analiza diariamente la variación de precios de 82 productos.",
     links: [
       { label: "GitHub", url: "https://github.com/matigimenezd/BotSuperDia" },
       { label: "Twitter", url: "https://x.com/BotDiaAR" },
     ],
+    displayUrl: "https://x.com/BotDiaAR",
     imgClass: "object-cover",
   },
   {
     name: "DinoGoogle RedNeuronal",
     subtitle: "Red neuronal desde cero + evolución genética",
     tag: "ML",
+    category: "ia",
+    status: { type: "open", label: "  IA Simulador" },
+    metrics: ["Red Neuronal Cero", "Algoritmo Genético"],
+    problem: "Aprender de forma práctica la implementación de algoritmos genéticos y perceptrones multicapa.",
+    solution: "Recreación del juego de Google en Java con agentes controlados por redes neuronales evolucionadas por selección genética.",
+    architecture: "Java 2D Graphics, Neural Network Matrix Engine desde cero. Algoritmos de mutación y crossover.",
     images: ["/dino.gif"],
     description:
-      "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google, integrando redes neuronales que permiten a los dinos aprender a saltar y agacharse automáticamente para esquivar obstáculos. El proyecto combina programación en Java, simulación de IA y algoritmos de aprendizaje evolutivo para optimizar el desempeño de los agentes en cada generación.",
+      "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google con redes neuronales evolutivas.",
     links: [
       { label: "GitHub", url: "https://github.com/matigimenezd/DinoAiV2" },
     ],
+    displayUrl: "java://dino-ai-simulation",
     imgClass: "object-cover",
   },
   {
     name: "Snake Game AI",
     subtitle: "Juego clásico + Red Neuronal",
     tag: "IA",
+    category: "ia",
+    status: { type: "open", label: "Open Source" },
+    metrics: ["Deep Learning Heuristics", "Python Pygame"],
+    problem: "Demostrar aprendizaje automático por refuerzo e IA autónoma en entornos limitados.",
+    solution: "Snake desarrollado en Python con red neuronal y algoritmo de decisiones heurísticas para jugar de forma autónoma sin morir.",
+    architecture: "Python, Pygame, NumPy matrices.",
     images: ["/snake.png"],
     description:
       "Snake en Python con red neuronal desde cero para que aprenda a jugar de forma autónoma.",
     links: [
       { label: "GitHub", url: "https://github.com/MatiGimenezD/SnakeGame" },
     ],
+    displayUrl: "python://snake-ai-engine",
     imgClass: "object-cover",
   },
   {
     name: "Extensión Chrome – Calculadora de Promedio para SIU Guaraní (UNViME)",
     subtitle: "Extensión de Chrome en producción",
     tag: "Extension",
+    category: "backend",
+    status: { type: "store", label: "  Chrome Web Store" },
+    metrics: ["+100 Usuarios", "Calculadora Automática"],
+    problem: "El sistema universitario SIU Guaraní muestra promedio 0 o falla en calcular la historia académica de alumnos.",
+    solution: "Extensión de Chrome que parsea el DOM del SIU Guaraní e inyecta el promedio correcto en la cabecera.",
+    architecture: "JavaScript Vanilla, Manifest V3, DOM MutationObserver.",
     images: ["/siuguarani.png"],
     description:
-      "Creé una extensión de navegador disponible en la Chrome Web Store que resuelve un problema frecuente del sistema SIU Guaraní: el cálculo incorrecto del promedio académico (cuando aparece como 0 o no visible). La extensión detecta automáticamente la sección de “Historia Académica” en el sistema y muestra el promedio en la parte superior de la página, incluso cuando la plataforma falla en calcularlo. Tecnologías utilizadas: JavaScript, HTML, CSS.",
+      "Creé una extensión de navegador disponible en la Chrome Web Store que resuelve el cálculo del promedio académico en SIU Guaraní.",
     links: [
       {
         label: "GitHub",
@@ -320,16 +377,24 @@ const hobbyProjects = [
         url: "https://chromewebstore.google.com/detail/mobhhadapaogikeffmlcicmfinnmheeh",
       },
     ],
+    displayUrl: "chrome-extension://siu-guarani-promedio",
     imgClass: "object-contain bg-zinc-950",
   },
   {
     name: "Parametrización de Muebles en SketchUp",
     subtitle: "Diseño 3D & Modelado Paramétrico",
     tag: "3D",
+    category: "web",
+    status: { type: "live", label: "  3D Interactive" },
+    metrics: ["Render Three.js", "Modelado Paramétrico"],
+    problem: "Visualización 3D interactiva de mobiliario técnico desde la web.",
+    solution: "Visualizador interactivo 3D embebido mediante Three.js y React Three Fiber con rotación e iluminación dinámica.",
+    architecture: "Three.js, GLTF Viewer, React Three Fiber.",
     images: ["/Modulos Parametrizados.glb"],
     description:
-      "Desarrollé el modelado 3D y la parametrización de mobiliario en SketchUp. Permite visualizar e interactuar en 3D en tiempo real con el diseño del mueble desde la web.",
+      "Desarrollé el modelado 3D y la parametrización de mobiliario en SketchUp para interactuar en tiempo real desde la web.",
     links: [],
+    displayUrl: "https://3d-viewer.local/sketchup",
     imgClass: "object-cover",
   },
 ];
@@ -2012,17 +2077,175 @@ function GlbFeatureBlock({ project }) {
   );
 }
 
+// ─── BROWSER MOCKUP & STATUS BADGES ──────────────────────────────────────────
+function BrowserMockup({ urlDisplay = "https://app.demo", children }) {
+  return (
+    <div className="browser-mockup">
+      <div className="browser-header">
+        <div className="browser-dots">
+          <div className="browser-dot red" />
+          <div className="browser-dot yellow" />
+          <div className="browser-dot green" />
+        </div>
+        <div className="browser-address-bar">
+          <svg className="browser-address-lock" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+          </svg>
+          <span>{urlDisplay}</span>
+        </div>
+      </div>
+      <div style={{ position: "relative" }}>{children}</div>
+    </div>
+  );
+}
+
+function StatusBadge({ type, label }) {
+  const classNames = {
+    live: "status-badge status-live",
+    store: "status-badge status-store",
+    open: "status-badge status-open",
+  };
+  return (
+    <span className={classNames[type] || "status-badge status-live"}>
+      <span className="status-dot" />
+      {label}
+    </span>
+  );
+}
+
+function ProjectDetailModal({ project, onClose }) {
+  if (!project) return null;
+  return (
+    <div className="case-study-overlay" onClick={onClose}>
+      <div className="case-study-card" onClick={(e) => e.stopPropagation()}>
+        <div className="case-study-header">
+          <div>
+            <span className="tag-pill sage">{project.tag}</span>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: 26, margin: "8px 0 4px", fontWeight: 600 }}>
+              {project.name}
+            </h2>
+            <p style={{ fontSize: 13, color: "var(--ink-muted)", margin: 0 }}>{project.subtitle}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "none",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              color: "#fff",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {project.status && (
+          <div style={{ marginBottom: 16 }}>
+            <StatusBadge type={project.status.type} label={project.status.label} />
+          </div>
+        )}
+
+        {project.metrics && project.metrics.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+            {project.metrics.map((m, i) => (
+              <span key={i} className="metric-pill">
+                ⚡ {m}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, marginBottom: 16 }}>
+          <p className="case-study-section-title">El Desafío</p>
+          <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--ink-mid)" }}>{project.problem || project.description}</p>
+        </div>
+
+        {project.solution && (
+          <div style={{ marginBottom: 16 }}>
+            <p className="case-study-section-title">La Solución</p>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--ink-mid)" }}>{project.solution}</p>
+          </div>
+        )}
+
+        {project.architecture && (
+          <div style={{ marginBottom: 20, background: "rgba(255,255,255,0.03)", padding: 16, borderRadius: 10, border: "1px solid var(--border)" }}>
+            <p className="case-study-section-title">Arquitectura & Stack</p>
+            <p style={{ fontSize: 13, lineHeight: 1.6, color: "var(--ink-muted)", margin: 0 }}>{project.architecture}</p>
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
+          {project.links && project.links.map((link) => (
+            <a key={link.label} href={link.url} target="_blank" rel="noreferrer" className="btn-primary" style={{ fontSize: 12, padding: "10px 18px" }}>
+              {link.label}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M7 17L17 7M17 7H7M17 7V17" />
+              </svg>
+            </a>
+          ))}
+          {project.url && (
+            <a href={project.url} target="_blank" rel="noreferrer" className="btn-primary" style={{ fontSize: 12, padding: "10px 18px" }}>
+              Ver Sitio Live
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M7 17L17 7M17 7H7M17 7V17" />
+              </svg>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── PROJECT GRID ──────────────────────────────────────────────────
-function ProjectGrid({ projects, onOpenMedia }) {
-  const regularProjects = projects.filter(
+function ProjectGrid({ projects, onOpenMedia, showFilters = true }) {
+  const [filter, setFilter] = useState("all");
+  const [detailProject, setDetailProject] = useState(null);
+
+  const filteredProjects = projects.filter((p) => {
+    if (filter === "all") return true;
+    return p.category === filter;
+  });
+
+  const regularProjects = filteredProjects.filter(
     (p) => !p.images.some((img) => img.endsWith(".glb")),
   );
-  const glbProjects = projects.filter((p) =>
+  const glbProjects = filteredProjects.filter((p) =>
     p.images.some((img) => img.endsWith(".glb")),
   );
 
   return (
     <>
+      {showFilters && (
+        <div className="project-filter-bar">
+          {[
+            { id: "all", label: "Todos" },
+            { id: "backend", label: "Backend & SaaS" },
+            { id: "ia", label: "IA & Scraping" },
+            { id: "web", label: "Web & Landings" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`project-filter-tab ${filter === tab.id ? "active" : ""}`}
+              onClick={() => setFilter(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {glbProjects.map((p) => (
         <GlbFeatureBlock key={p.name} project={p} />
       ))}
@@ -2035,28 +2258,50 @@ function ProjectGrid({ projects, onOpenMedia }) {
               style={{ transitionDelay: `${i * 0.07}s` }}
             >
               <div className="proj-card-media">
-                <ProjectImageSlider
-                  images={p.images}
-                  onOpenGallery={onOpenMedia}
-                />
+                <BrowserMockup urlDisplay={p.displayUrl || `https://${p.name.toLowerCase().replace(/\s+/g, '')}.com`}>
+                  <ProjectImageSlider
+                    images={p.images}
+                    onOpenGallery={onOpenMedia}
+                  />
+                </BrowserMockup>
               </div>
               <div className="proj-card-body">
-                <div className="proj-card-header">
+                <div className="proj-card-header" style={{ alignItems: "center" }}>
                   <span className="tag-pill sage">{p.tag}</span>
-                  <span className="proj-card-year">{p.year || ""}</span>
+                  {p.status && <StatusBadge type={p.status.type} label={p.status.label} />}
                 </div>
-                <h3 className="proj-card-name">{p.name}</h3>
+                <h3 className="proj-card-name" style={{ marginTop: 8 }}>{p.name}</h3>
                 <p className="proj-card-sub">{p.subtitle}</p>
+
+                {p.metrics && p.metrics.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0 14px" }}>
+                    {p.metrics.map((m, idx) => (
+                      <span key={idx} className="metric-pill">
+                        ⚡ {m}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 <p className="proj-card-desc">{p.description}</p>
-                <div className="proj-card-links">
-                  {p.links.map((link) => (
+
+                <div className="proj-card-links" style={{ gap: 8 }}>
+                  <button
+                    type="button"
+                    className="btn-primary"
+                    style={{ fontSize: 11, padding: "6px 14px" }}
+                    onClick={() => setDetailProject(p)}
+                  >
+                    Detalle Técnico
+                  </button>
+                  {p.links && p.links.map((link) => (
                     <a
                       key={link.label}
                       href={link.url}
                       target="_blank"
                       rel="noreferrer"
                       className="btn-ghost"
-                      style={{ fontSize: 12, padding: "8px 16px" }}
+                      style={{ fontSize: 11, padding: "6px 12px" }}
                     >
                       {link.label}
                       <svg
@@ -2076,6 +2321,13 @@ function ProjectGrid({ projects, onOpenMedia }) {
             </article>
           ))}
         </div>
+      )}
+
+      {detailProject && (
+        <ProjectDetailModal
+          project={detailProject}
+          onClose={() => setDetailProject(null)}
+        />
       )}
     </>
   );
