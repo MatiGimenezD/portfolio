@@ -3,199 +3,12 @@ import {
   useRef,
   useEffect,
   useCallback,
-  lazy,
-  Suspense,
   useMemo,
 } from "react";
 import Lenis from "lenis";
 import { GitHubCalendar } from "react-github-calendar";
-import { Canvas } from "@react-three/fiber";
-import { ContactShadows, OrbitControls, useGLTF } from "@react-three/drei";
-import * as THREE from "three";
-const Story3D = lazy(() => import("./Story3D"));
-const loadStory3D = () => import("./Story3D");
 
-// ─── CUSTOM CURSOR ────────────────────────────────────────────────────────────
-function CustomCursor() {
-  const cursorRef = useRef(null);
-  const trailRef = useRef([]);
-  const posRef = useRef({ x: -100, y: -100 });
-  const mouseRef = useRef({ x: -100, y: -100 });
-  const rafRef = useRef(null);
-  const isAnimatingRef = useRef(false);
-
-  useEffect(() => {
-    const cursor = cursorRef.current;
-    const trails = trailRef.current;
-    const hoverSelectors = "a, button, .project-img-wrap";
-
-    const isHoverTarget = (el) => el && el.closest(hoverSelectors);
-
-    const startAnimation = () => {
-      if (!isAnimatingRef.current) {
-        isAnimatingRef.current = true;
-        rafRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    const onMove = (e) => {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
-      startAnimation();
-    };
-    const onOver = (e) => {
-      if (isHoverTarget(e.target)) {
-        document.body.classList.add("cursor-hover");
-      }
-    };
-    const onOut = (e) => {
-      if (isHoverTarget(e.target) && !isHoverTarget(e.relatedTarget)) {
-        document.body.classList.remove("cursor-hover");
-      }
-    };
-    const onDown = () => document.body.classList.add("cursor-down");
-    const onUp = () => document.body.classList.remove("cursor-down");
-    window.addEventListener("mousemove", onMove, { passive: true });
-    document.addEventListener("mouseover", onOver);
-    document.addEventListener("mouseout", onOut);
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("mouseup", onUp);
-
-    const animate = () => {
-      const dx = mouseRef.current.x - posRef.current.x;
-      const dy = mouseRef.current.y - posRef.current.y;
-      posRef.current.x += dx * 0.18;
-      posRef.current.y += dy * 0.18;
-      if (cursor) {
-        cursor.style.transform = `translate(${posRef.current.x - 4}px, ${posRef.current.y - 4}px)`;
-      }
-      trails.forEach((dot, i) => {
-        if (dot) {
-          const delay = (i + 1) * 0.08;
-          const tx = posRef.current.x;
-          const ty = posRef.current.y;
-          dot.style.transform = `translate(${tx - 2}px, ${ty - 2}px)`;
-          dot.style.opacity = (1 - (i + 1) / trails.length) * 0.35;
-          dot.style.transitionDelay = `${delay}s`;
-        }
-      });
-
-      if (Math.abs(dx) < 0.05 && Math.abs(dy) < 0.05) {
-        isAnimatingRef.current = false;
-        rafRef.current = null;
-      } else {
-        rafRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseover", onOver);
-      document.removeEventListener("mouseout", onOut);
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("mouseup", onUp);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  return (
-    <>
-      <div ref={cursorRef} className="custom-cursor" />
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          ref={(el) => {
-            trailRef.current[i] = el;
-          }}
-          className="cursor-trail"
-          style={{ transition: `transform ${0.1 + i * 0.06}s ease` }}
-        />
-      ))}
-    </>
-  );
-}
-
-const _storyProjects = [
-  {
-    name: "SimpleBuy",
-    year: "2023",
-    tag: "Back-End",
-    problem:
-      "Los negocios locales no tenían forma sencilla de vender online sin depender de plataformas caras o complejas. Montar una tienda requería conocimientos técnicos que la mayoría no tenía.",
-    solution:
-      "Construí una plataforma que permite crear y gestionar tiendas online en minutos.",
-    images: ["/SimpleBuyPedidos.png", "/SimpleBuyproductos.png"],
-    image: "/SimpleBuyPedidos.png",
-    isVideo: false,
-    color: "#2a3a32",
-  },
-  {
-    name: "Citax",
-    year: "2024",
-    tag: "SaaS",
-    problem:
-      "Los negocios de turnos (peluquerías, consultorios, estudios) perdían clientes por no poder gestionar citas fuera del horario laboral. El teléfono como único canal era un cuello de botella.",
-    solution:
-      "Un SaaS con gestión de turnos automatizada e integración con IA para responder consultas por WhatsApp. ",
-    images: [
-      "/www.citax.com.ar_.png",
-      "/www.citax.com.ar_ (1).png",
-      "/citaxchatwsp.png",
-    ],
-    image: "/www.citax.com.ar_.png",
-    isVideo: false,
-    color: "#1e2d3d",
-  },
-  {
-    name: "Club Judicial VM",
-    year: "2026",
-    tag: "Web",
-    problem: "",
-    solution: "",
-    images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
-    image: "/clubjudicial1.png",
-    isVideo: false,
-    color: "#2d2820",
-  },
-  {
-    name: "Ingeniería en Primera Persona",
-    year: "2023",
-    tag: "Evento",
-    problem: "",
-    solution: "",
-    images: ["/ingprimerapersona1.png", "/ingprimerapersona.png"],
-    image: "/ingprimerapersona1.png",
-    isVideo: false,
-    color: "#1a2035",
-  },
-  {
-    name: "NASA Space Apps",
-    year: "2023",
-    tag: "Hackathon",
-    problem:
-      "La predicción de lluvia hiperlocal era poco accesible para agricultores y personas sin conocimientos meteorológicos. Los datos de la NASA no llegaban a quienes más los necesitaban.",
-    solution: "",
-    images: ["/willitrain.png", "/willitrain1.png"],
-    image: "/willitrain.png",
-    isVideo: false,
-    color: "#0d1a2e",
-  },
-];
-
-const STORY_MUSIC_URL = "/story-music.mp3";
-
-const resolveStoryAsset = (p) => {
-  if (p.startsWith("http")) return p;
-  const clean = p.startsWith("/public/")
-    ? p.slice(8)
-    : p.startsWith("public/")
-      ? p.slice(7)
-      : p.startsWith("/")
-        ? p.slice(1)
-        : p;
-  return import.meta.env.BASE_URL + encodeURI(clean);
-};
-
+// ─── DATA: PROJECTS ───────────────────────────────────────────────────────────
 const mainProjects = [
   {
     name: "SimpleBuy",
@@ -224,9 +37,9 @@ const mainProjects = [
     solution: "SaaS multi-usuario con motor de reservas y agente de IA integrado a WhatsApp.",
     architecture: "Node.js, Express, MongoDB, IA Agents API. Lógica de negocio compleja, sincronización de turnos y mensajería en tiempo real.",
     images: [
-      "/www.citax.com.ar_.png",
-      "/www.citax.com.ar_ (1).png",
-      "/citaxchatwsp.png",
+      "/www.citax.com.ar_.webp",
+      "/www.citax.com.ar_ (1).webp",
+      "/citaxchatwsp.webp",
     ],
     description: "Demuestra lógica de negocio compleja, turnos, usuarios y foco en mantenibilidad y escalabilidad.",
     links: [{ label: "Sitio", url: "https://www.citax.com.ar/" }],
@@ -243,7 +56,7 @@ const mainProjects = [
     problem: "Falta de centralización para actividades y reservas institucionales para socios.",
     solution: "Portal institucional moderno con catálogo de actividades, noticias y sistema de contacto.",
     architecture: "JavaScript, HTML5, CSS3, integración de formularios. UX accesible para socios.",
-    images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
+    images: ["/clubjudicial1.webp", "/clubjudicial2.webp", "/clubjudicial3.webp"],
     description: "Sitio institucional con enfoque en contenido, reservas y experiencia para socios.",
     links: [{ label: "Sitio", url: "https://clubjudicialvm.com.ar/" }],
     displayUrl: "https://clubjudicialvm.com.ar",
@@ -258,115 +71,112 @@ const mainProjects = [
     metrics: ["+300 Asistentes", "Landing Eventos"],
     problem: "Desconexión entre estudiantes universitarios y profesionales de la industria laboral.",
     solution: "Landing page del evento para difusión, agenda de conferencistas e inscripciones.",
-    architecture: "React, Firebase Web Hosting. Despliegue continuo y alta velocidad de carga.",
-    images: ["/ingprimerapersona1.png", "/ingprimerapersona.png"],
-    description: "Evento universitario organizado en equipo donde profesionales compartieron sus experiencias laborales.",
-    links: [
-      { label: "Sitio", url: "https://ingprimerapersona.web.app/" },
-      {
-        label: "GitHub",
-        url: "https://github.com/MatiGimenezD/ingprimerapersona",
-      },
-    ],
-    displayUrl: "https://ingprimerapersona.web.app",
+    architecture: "Diseño y estructura responsiva, optimización de recursos y despliegue rápido.",
+    images: ["/ingprimerapersona1.webp", "/ingprimerapersona.webp"],
+    description: "Organización y web para el evento de difusión profesional de la FICA-UNViMe.",
+    links: [{ label: "Sitio", url: "https://ingprimerapersona.com.ar/" }],
+    displayUrl: "https://ingprimerapersona.com.ar",
     imgClass: "object-cover",
   },
   {
-    name: "NASA Space Apps",
-    subtitle: "Desafío Will it Rain",
+    name: "Will it Rain? — NASA Space Apps",
+    subtitle: "Predicción de lluvia con datos satelitales",
     tag: "Hackathon",
     category: "ia",
     status: { type: "open", label: "NASA Hackathon" },
-    metrics: ["Datos NASA GPM", "Predicción hiperlocal"],
-    problem: "Falta de accesibilidad a datos meteorológicos complejos para agricultores locales.",
-    solution: "Modelado y backend para procesar precipitación hiperlocal e interfaz intuitiva.",
-    architecture: "Backend Python/Node.js + REST API. Procesamiento de datasets espaciales.",
-    images: ["/willitrain.png", "/willitrain1.png"],
-    description: "Hackathon internacional de la NASA: predicción y visualización meteorológica.",
+    metrics: ["NASA GPM Data", "Geolocalización", "Scoring de Lluvia"],
+    problem: "Falta de herramientas sencillas para entender la probabilidad de precipitación en tiempo real para sectores productivos.",
+    solution: "Aplicación web que procesa datos meteorológicos y satelitales de la NASA para dar respuestas claras sobre el clima.",
+    architecture: "Integración de datasets climáticos de la NASA, consumo de APIs meteorológicas, JavaScript, CSS.",
+    images: ["/willitrain.webp", "/willitrain1.webp"],
+    description: "Proyecto desarrollado para el NASA Space Apps Challenge utilizando datos de precipitación global.",
     links: [
-      { label: "App", url: "https://will-it-rain-front.vercel.app/" },
       {
-        label: "GitHub Backend",
-        url: "https://github.com/MatiGimenezD/WillItRainBackEnd",
+        label: "Proyecto",
+        url: "https://www.spaceappschallenge.org/nasa-space-apps-2024/find-a-team/will-it-rain/",
       },
+      { label: "Demo", url: "https://willitrain.com.ar" },
     ],
-    displayUrl: "https://will-it-rain-front.vercel.app",
+    displayUrl: "https://willitrain.com.ar",
     imgClass: "object-contain bg-zinc-950",
   },
 ];
 
 const hobbyProjects = [
   {
-    name: "Bot de Twitter – Variación diaria de precios de Día (BotSuperDia)",
-    subtitle: "Web Scraping y Automatización",
-    tag: "Bot",
-    category: "ia",
-    status: { type: "open", label: "  Bot en Twitter" },
-    metrics: ["82 productos rastreados", "Scraping diario", "MySQL Storage"],
-    problem: "Analizar la variación de precios de supermercados en contexto inflacionario de forma automática.",
-    solution: "Bot autónomo en Python que extrae precios diariamente con BeautifulSoup, almacena en MySQL y postea resúmenes en Twitter vía API.",
-    architecture: "Python, BeautifulSoup4, MySQL DB, Twitter API v2. Ejecución programada (CRON).",
-    images: ["/botdia.png"],
-    description:
-      "Desarrollé un bot automatizado en Python que analiza diariamente la variación de precios de 82 productos.",
-    links: [
-      { label: "GitHub", url: "https://github.com/matigimenezd/BotSuperDia" },
-      { label: "Twitter", url: "https://x.com/BotDiaAR" },
-    ],
-    displayUrl: "https://x.com/BotDiaAR",
-    imgClass: "object-cover",
-  },
-  {
     name: "DinoGoogle RedNeuronal",
-    subtitle: "Red neuronal desde cero + evolución genética",
-    tag: "ML",
+    subtitle: "Red neuronal evolucionada por algoritmos genéticos",
+    tag: "IA / Genético",
     category: "ia",
-    status: { type: "open", label: "  IA Simulador" },
-    metrics: ["Red Neuronal Cero", "Algoritmo Genético"],
-    problem: "Aprender de forma práctica la implementación de algoritmos genéticos y perceptrones multicapa.",
+    status: { type: "open", label: "Experimento IA" },
+    metrics: ["Algoritmos Genéticos", "Red Neuronal FeedForward"],
+    problem: "Entender de manera práctica la convergencia y entrenamiento de redes neuronales sin frameworks prehechos.",
     solution: "Recreación del juego de Google en Java con agentes controlados por redes neuronales evolucionadas por selección genética.",
-    architecture: "Java 2D Graphics, Neural Network Matrix Engine desde cero. Algoritmos de mutación y crossover.",
-    images: ["/dino.gif"],
+    architecture: "Java, Algoritmos Genéticos (cruce, mutación, fitness), Red Neuronal personalizada.",
+    images: ["/dino.webp", "/dinoCharacter.webp"],
     description:
       "Desarrollé desde cero una versión del clásico juego del dinosaurio de Google con redes neuronales evolutivas.",
     links: [
-      { label: "GitHub", url: "https://github.com/matigimenezd/DinoAiV2" },
+      {
+        label: "GitHub",
+        url: "https://github.com/matigimenezd/DinoGoogle-RedNeuronal",
+      },
     ],
-    displayUrl: "java://dino-ai-simulation",
-    imgClass: "object-cover",
+    displayUrl: "https://github.com/matigimenezd/DinoGoogle-RedNeuronal",
+    imgClass: "object-contain bg-zinc-950",
   },
   {
     name: "Snake Game AI",
-    subtitle: "Juego clásico + Red Neuronal",
+    subtitle: "Agente autónomo con red neuronal",
     tag: "IA",
     category: "ia",
-    status: { type: "open", label: "Open Source" },
-    metrics: ["Deep Learning Heuristics", "Python Pygame"],
-    problem: "Demostrar aprendizaje automático por refuerzo e IA autónoma en entornos limitados.",
-    solution: "Snake desarrollado en Python con red neuronal y algoritmo de decisiones heurísticas para jugar de forma autónoma sin morir.",
-    architecture: "Python, Pygame, NumPy matrices.",
-    images: ["/snake.png"],
+    status: { type: "open", label: "Red Neuronal" },
+    metrics: ["Red Neuronal Propia", "Entrenamiento Autónomo"],
+    problem: "Explorar la toma de decisiones espaciales y evasión de obstáculos con redes neuronales simples.",
+    solution: "Juego de la víbora en Java donde la serpiente aprende a buscar comida y esquivar colisiones.",
+    architecture: "Java Swing, perceptrones multicapa y función de fitness personalizada.",
+    images: ["/snake.webp"],
     description:
-      "Snake en Python con red neuronal desde cero para que aprenda a jugar de forma autónoma.",
+      "Implementación del clásico Snake en Java con agentes que aprenden a jugar de forma autónoma.",
     links: [
-      { label: "GitHub", url: "https://github.com/MatiGimenezD/SnakeGame" },
+      {
+        label: "GitHub",
+        url: "https://github.com/matigimenezd/Snake-RedNeuronal",
+      },
     ],
-    displayUrl: "python://snake-ai-engine",
-    imgClass: "object-cover",
+    displayUrl: "https://github.com/matigimenezd/Snake-RedNeuronal",
+    imgClass: "object-contain bg-zinc-950",
   },
   {
-    name: "Extensión Chrome – Calculadora de Promedio para SIU Guaraní (UNViME)",
-    subtitle: "Extensión de Chrome en producción",
-    tag: "Extension",
+    name: "Bot Inflación Día a Día",
+    subtitle: "Scraping y publicación automática en X / Twitter",
+    tag: "Scraping",
     category: "backend",
-    status: { type: "store", label: "  Chrome Web Store" },
-    metrics: ["+100 Usuarios", "Calculadora Automática"],
-    problem: "El sistema universitario SIU Guaraní muestra promedio 0 o falla en calcular la historia académica de alumnos.",
-    solution: "Extensión de Chrome que parsea el DOM del SIU Guaraní e inyecta el promedio correcto en la cabecera.",
-    architecture: "JavaScript Vanilla, Manifest V3, DOM MutationObserver.",
-    images: ["/siuguarani.png"],
+    status: { type: "live", label: "Bot Automático" },
+    metrics: ["Scraping Diario", "Twitter API v2", "Cron Job"],
+    problem: "Monitorear la variación real y diaria de precios en supermercados sin depender de índices oficiales atrasados.",
+    solution: "Scraper automatizado que recopila precios de productos de consumo masivo y publica métricas diarias en Twitter.",
+    architecture: "Python / Node.js, Web Scraping con Puppeteer/BeautifulSoup, integración Twitter API v2 y cron jobs.",
+    images: ["/diabot1.webp", "/diabot.webp"],
     description:
-      "Creé una extensión de navegador disponible en la Chrome Web Store que resuelve el cálculo del promedio académico en SIU Guaraní.",
+      "Bot que realiza scraping diario sobre cadenas de supermercados para calcular la inflación acumulada.",
+    links: [{ label: "X / Twitter", url: "https://x.com/BotSupermercado" }],
+    displayUrl: "https://x.com/BotSupermercado",
+    imgClass: "object-contain bg-zinc-950",
+  },
+  {
+    name: "SIU Guaraní - Extensión",
+    subtitle: "Cálculo automático de promedio en SIU Guaraní",
+    tag: "Extensión",
+    category: "backend",
+    status: { type: "store", label: "Chrome Web Store" },
+    metrics: ["+500 Usuarios", "DOM Injection", "Manifest V3"],
+    problem: "El sistema universitario SIU Guaraní no calcula automáticamente el promedio con y sin aplazos de los estudiantes.",
+    solution: "Extensión para Chrome que parsea la historia académica en tiempo real y calcula promedios y porcentajes de carrera.",
+    architecture: "Chrome Extensions API (Manifest V3), JavaScript DOM parser.",
+    images: ["/siuguarani.webp"],
+    description:
+      "Extensión para Chrome que calcula de forma automática el promedio con y sin aplazos dentro del SIU Guaraní.",
     links: [
       {
         label: "GitHub",
@@ -383,18 +193,18 @@ const hobbyProjects = [
   {
     name: "Parametrización de Muebles en SketchUp",
     subtitle: "Diseño 3D & Modelado Paramétrico",
-    tag: "3D",
+    tag: "Modelado 3D",
     category: "web",
-    status: { type: "live", label: "  3D Interactive" },
-    metrics: ["Render Three.js", "Modelado Paramétrico"],
-    problem: "Visualización 3D interactiva de mobiliario técnico desde la web.",
-    solution: "Visualizador interactivo 3D embebido mediante Three.js y React Three Fiber con rotación e iluminación dinámica.",
-    architecture: "Three.js, GLTF Viewer, React Three Fiber.",
-    images: ["/Modulos Parametrizados.glb"],
+    status: { type: "open", label: "Modelado Paramétrico" },
+    metrics: ["SketchUp", "Modelado Paramétrico", "Componentes Dinámicos"],
+    problem: "Diseño y parametrización técnica de mobiliario modular para fabricación y arquitectura.",
+    solution: "Modelado paramétrico con componentes dinámicos en SketchUp para ajuste ágil de medidas, despieces y optimización de materiales.",
+    architecture: "SketchUp, Componentes Dinámicos, Modelado Paramétrico y Documentación Técnica.",
+    images: ["/muebles-parametrizados.webp"],
     description:
-      "Desarrollé el modelado 3D y la parametrización de mobiliario en SketchUp para interactuar en tiempo real desde la web.",
+      "Desarrollo de modelado técnico y parametrización de mobiliario modular en SketchUp, optimizando despieces y dimensiones adaptables.",
     links: [],
-    displayUrl: "https://3d-viewer.local/sketchup",
+    displayUrl: "https://sketchup-parametric.local",
     imgClass: "object-cover",
   },
 ];
@@ -403,7 +213,7 @@ const additionalProjects = [
   {
     name: "Saber Raíz",
     tag: "E-commerce",
-    images: ["/www.saberraiz.com.ar_.png"],
+    images: ["/www.saberraiz.com.ar_.webp"],
     description:
       "Landing e-commerce de blends naturales con foco en producto y conversión.",
     url: "https://www.saberraiz.com.ar/",
@@ -412,7 +222,7 @@ const additionalProjects = [
   {
     name: "Consultora Puerta de Augusta",
     tag: "Corporativo",
-    images: ["/www.consultorapuertadeaugusta.com.ar_.png"],
+    images: ["/www.consultorapuertadeaugusta.com.ar_.webp"],
     description:
       "Sitio corporativo para servicios de consultoría estratégica y mejora continua.",
     url: "https://www.consultorapuertadeaugusta.com.ar/",
@@ -421,7 +231,7 @@ const additionalProjects = [
   {
     name: "CTMI S.A.S. - Soporte Técnico Industrial",
     tag: "Industrial",
-    images: ["/www.ctmi.com.ar_.png", "/www.ctmi.com.ar_ (1).png"],
+    images: ["/www.ctmi.com.ar_.webp", "/www.ctmi.com.ar_ (1).webp"],
     description:
       "Sitio web para CTMI S.A.S. (Villa Mercedes), empresa especializada en soporte técnico industrial, mantenimiento electromecánico, automatización y tableros eléctricos.",
     url: "https://www.ctmi.com.ar/",
@@ -429,167 +239,36 @@ const additionalProjects = [
   },
 ];
 
-const storyTimeline = [
+// ─── DATA: CERTIFICATIONS ─────────────────────────────────────────────────────
+const certifications = [
   {
-    name: "Bot Twitter Inflacion + SIU Guarani",
-    year: "2024",
-    tag: "Hobby",
-    problem:
-      "Me interesaba construir proyectos chicos pero concretos que resolvieran problemas reales: automatizar relevamientos de precios y mejorar una herramienta que estudiantes usan todos los dias.",
-    solution:
-      "Arme un bot de scraping para publicar variaciones de precios y una extension de Chrome para calcular promedios en SIU Guarani de forma automatica.",
-    images: ["/botdia.png", "/extensionsiu.png"],
-    image: "/botdia.png",
-    isVideo: false,
-    color: "#35261d",
-  },
-  {
-    name: "SimpleBuy",
-    year: "2025",
-    tag: "Back-End",
-    problem:
-      "Los negocios locales no tenian forma sencilla de vender online sin depender de plataformas caras o complejas. Montar una tienda requeria conocimientos tecnicos que la mayoria no tenia.",
-    solution:
-      "Construi una plataforma que permite crear y gestionar tiendas online en minutos.",
-    image: "/ReelSimpleBuy10.mp4",
-    isVideo: true,
-    color: "#2a3a32",
-  },
-  {
-    name: "Club Judicial VM",
-    year: "2025",
-    tag: "Web",
-    problem:
-      "La institucion necesitaba una presencia digital mas clara para comunicar actividades, mejorar la experiencia de sus socios y ordenar mejor el acceso a la informacion.",
-    solution:
-      "Disene y desarrolle un portal institucional con foco en contenido, estructura clara y una experiencia mas moderna para socios y visitantes.",
-    images: ["/clubjudicial1.png", "/clubjudicial2.png", "/clubjudicial3.png"],
-    image: "/clubjudicial1.png",
-    isVideo: false,
-    color: "#2d2820",
-  },
-  {
-    name: "Ingenieria en Primera Persona",
-    year: "2025",
-    tag: "Evento",
-    problem:
-      "Hacia falta acercar experiencias laborales reales a estudiantes de ingenieria para conectar la carrera con salidas concretas y referentes del mundo profesional.",
-    solution:
-      "Participe en la organizacion del evento y en la construccion del sitio, ayudando a presentar el contenido de forma clara y atractiva para estudiantes y asistentes.",
-    images: ["/ingprimerapersona1.png", "/ingprimerapersona.png"],
-    image: "/ingprimerapersona1.png",
-    isVideo: false,
-    color: "#1a2035",
-  },
-  {
-    name: "Dino IA + Snake Game AI",
-    year: "2025",
-    tag: "Hobby IA",
-    problem:
-      "Quise profundizar en redes neuronales y algoritmos geneticos llevando la teoria a experimentos visuales, iterables y divertidos de entrenar.",
-    solution:
-      "Desarrolle dos juegos con IA desde cero: un Dino con evolucion genetica y un Snake con red neuronal para explorar aprendizaje, simulacion y ajuste de heuristicas.",
-    images: ["/dino.gif", "/snake.png"],
-    image: "/dino.gif",
-    isVideo: false,
-    color: "#172a24",
-  },
-  {
-    name: "Saber Raiz + Puerta de Augusta + CTMI",
-    year: "2025",
-    tag: "Landings",
-    problem:
-      "Marcas de distintos rubros necesitaban presencia web clara y profesional, con foco en identidad, confianza y conversión desde el primer scroll.",
-    solution:
-      "Construí landings con una narrativa visual cuidada (Saber Raíz, Consultora Puerta de Augusta, CTMI), priorizando jerarquía de contenido y conversión.",
-    images: [
-      "/www.saberraiz.com.ar_.png",
-      "/www.consultorapuertadeaugusta.com.ar_.png",
-      "/www.ctmi.com.ar_.png",
-      "/www.ctmi.com.ar_ (1).png",
+    id: "google-cybersecurity",
+    title: "Google Cybersecurity Professional Certificate (v.2)",
+    issuer: "Google · Coursera",
+    date: "Agosto 2026",
+    badge: "/google-cybersecurity-badge.webp",
+    pdfUrl: "/google-cybersecurity-certificate.pdf",
+    credlyUrl: "https://www.credly.com/earner/earned/badge/d16ad120-9898-46f2-9d21-8d8f003ba6b0",
+    description:
+      "Certificación profesional otorgada por Google a través de Coursera y verificada en Credly. Acredita competencias en identificación de vulnerabilidades, respuesta ante incidentes, mitigación de riesgos de seguridad, análisis de paquetes de red y automatización de procesos de ciberseguridad con Python y Linux.",
+    skills: [
+      "Attacks & Exploits",
+      "Career Development",
+      "Introduction to Linux",
+      "Security Fundamentals",
+      "Python Automation",
+      "SIEM & IDS/IPS",
+      "Packet Analysis (Wireshark)",
+      "Incident Response",
     ],
-    image: "/www.saberraiz.com.ar_.png",
-    isVideo: false,
-    color: "#4a3426",
+    verified: true,
   },
-  {
-    name: "Citax",
-    year: "2026",
-    tag: "SaaS",
-    problem:
-      "Los negocios de turnos (peluquerias, consultorios, estudios) perdian clientes por no poder gestionar citas fuera del horario laboral. El telefono como unico canal era un cuello de botella.",
-    solution:
-      "Un SaaS con gestion de turnos automatizada e integracion con IA para responder consultas por WhatsApp. ",
-    images: [
-      "/www.citax.com.ar_.png",
-      "/www.citax.com.ar_ (1).png",
-      "/citaxchatwsp.png",
-    ],
-    image: "/www.citax.com.ar_.png",
-    isVideo: false,
-    color: "#1e2d3d",
-  },
-  {
-    name: "NASA Space Apps",
-    year: "2026",
-    tag: "Hackathon",
-    problem:
-      "La prediccion de lluvia hiperlocal era poco accesible para agricultores y personas sin conocimientos meteorologicos. Los datos de la NASA no llegaban a quienes mas los necesitaban.",
-    solution: "",
-    images: ["/willitrain.png", "/willitrain1.png"],
-    image: "/willitrain.png",
-    isVideo: false,
-    color: "#0d1a2e",
-  },
-];
-
-const storyTotalProjects = storyTimeline.length;
-
-// MAPA DE ECLIPSE — tiempos exactos + mood para el sistema de animación
-const storyProjectSync = [
-  // 13.9s — "All that you touch / And all that you see..."
-  { textSync: 13.9, mediaSync: 15.1, nextSlide: 27.5, mood: "intro" },
-
-  // 27.5s — "And all that you love / And all that you hate..."
-  { textSync: 27.5, mediaSync: 28.7, nextSlide: 41.2, mood: "building" },
-
-  // 41.2s — "And all that you give / And all that you deal..."
-  { textSync: 41.2, mediaSync: 42.4, nextSlide: 55.0, mood: "building" },
-
-  // 55.0s — "And all you create / And all you destroy..."
-  { textSync: 55.0, mediaSync: 56.2, nextSlide: 68.8, mood: "energetic" },
-
-  // 68.8s — "And everyone you meet / And all that you slight..."
-  { textSync: 68.8, mediaSync: 70.0, nextSlide: 82.5, mood: "energetic" },
-
-  // 82.5s — "And all that is now / And all that is gone..."
-  { textSync: 82.5, mediaSync: 83.7, nextSlide: 93.0, mood: "intense" },
-
-  // 93.0s — "And everything under the sun is in tune..." (remate épico)
-  { textSync: 93.0, mediaSync: 94.2, nextSlide: 102.5, mood: "climax-prep" },
-
-  // 102.5s — "But the sun is eclipsed by the moon." (corte seco final)
-  { textSync: 102.5, mediaSync: 104.0, nextSlide: 110.0, mood: "climax-drop" },
-];
-
-const storySlides = [
-  { type: "intro", sync: { nextSlide: 3.0 } },
-  ...storyTimeline.flatMap((project, index) => {
-    return [
-      {
-        type: "project",
-        project,
-        projectIndex: index,
-        sync: storyProjectSync[index],
-      },
-    ];
-  }),
-  { type: "outro", sync: { nextSlide: null } },
 ];
 
 const navItems = [
   { label: "Sobre mí", id: "about" },
   { label: "Stack", id: "stack" },
+  { label: "Certificaciones", id: "certifications" },
   { label: "Proyectos", id: "projects" },
   { label: "Hobby", id: "hobby" },
   { label: "Landings", id: "landings" },
@@ -667,7 +346,7 @@ const skillNodes = [
     x: 18,
     y: 78,
     related: ["ml", "javascript"],
-    projects: ["Dino IA V2", "Snake Game AI", "Bot Twitter Inflación"],
+    projects: ["Dino IA V2", "Snake Game AI", "Bot Twitter Inflación", "Google Cybersecurity"],
   },
   {
     id: "ml",
@@ -687,15 +366,21 @@ const skillEdges = skillNodes.flatMap((node) =>
 function useSmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 0.85,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.2,
     });
+    let rafId;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
-    return () => lenis.destroy();
+    rafId = requestAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
   }, []);
 }
 
@@ -747,24 +432,28 @@ function useTypingEffect(words, speed = 80, deleteSpeed = 45, pause = 2000) {
 function useActiveSection() {
   const [active, setActive] = useState("");
   useEffect(() => {
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollY = window.scrollY + 120;
-          let current = "";
-          navItems.forEach((n) => {
-            const s = document.getElementById(n.id);
-            if (s && s.offsetTop <= scrollY) current = s.id;
-          });
-          setActive(current);
-          ticking = false;
+    const sectionEls = navItems
+      .map((item) => document.getElementById(item.id))
+      .filter(Boolean);
+
+    if (!sectionEls.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
         });
-        ticking = true;
+      },
+      {
+        rootMargin: "-20% 0px -60% 0px",
+        threshold: 0,
       }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    );
+
+    sectionEls.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
   return active;
 }
@@ -780,7 +469,6 @@ function Navbar({ active }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  // Close mobile menu on scroll or click
   useEffect(() => {
     if (mobileOpen) {
       const close = () => setMobileOpen(false);
@@ -821,7 +509,7 @@ function Navbar({ active }) {
         {/* Desktop Links */}
         <div
           className="nav-links-desktop"
-          style={{ display: "flex", alignItems: "center", gap: 28 }}
+          style={{ display: "flex", alignItems: "center", gap: 24 }}
         >
           {navItems.map((item) => (
             <button
@@ -838,7 +526,7 @@ function Navbar({ active }) {
           <a
             href="mailto:matiasgimenez452@gmail.com"
             className="btn-primary"
-            style={{ padding: "8px 18px", fontSize: 12, marginLeft: 8 }}
+            style={{ padding: "8px 18px", fontSize: 12, marginLeft: 6 }}
           >
             Contacto
           </a>
@@ -1020,146 +708,35 @@ function SkillSynergyNetwork() {
   );
 }
 
-// ─── 3D GLB MODEL VIEWER ──────────────────────────────────────────────────────
-function GlbModelInternal({ url }) {
-  const { scene } = useGLTF(url);
-  const model = useMemo(() => scene.clone(true), [scene]);
-  const { center, scale } = useMemo(() => {
-    const box = new THREE.Box3().setFromObject(model);
-    const size = new THREE.Vector3();
-    const boxCenter = new THREE.Vector3();
-    box.getSize(size);
-    box.getCenter(boxCenter);
-
-    const maxAxis = Math.max(size.x, size.y, size.z) || 1;
-    return {
-      center: boxCenter,
-      scale: 5 / maxAxis,
-    };
-  }, [model]);
-
-  useEffect(() => {
-    model.traverse((child) => {
-      if (!child.isMesh) return;
-      child.castShadow = true;
-      child.receiveShadow = true;
-      if (child.material) {
-        child.material.roughness = Math.max(
-          child.material.roughness ?? 0.55,
-          0.5,
-        );
-      }
-    });
-  }, [model]);
-
-  return (
-    <group
-      scale={scale}
-      position={[
-        -center.x * scale,
-        -center.y * scale + 0.15,
-        -center.z * scale,
-      ]}
-      rotation={[0, -0.35, 0]}
-    >
-      <primitive object={model} />
-    </group>
-  );
-}
-
-function GlbCanvas({ url }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.05 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      className="furniture-viewer"
-      onClick={(e) => e.stopPropagation()}
-      data-lenis-prevent
-      onWheel={(e) => e.stopPropagation()}
-    >
-      {isVisible && (
-        <Canvas
-          shadows
-          dpr={[1, 1.5]}
-          camera={{ position: [4.2, 2.5, 5.2], fov: 34, near: 0.1, far: 100 }}
-        >
-          <color attach="background" args={["#11110f"]} />
-          <ambientLight intensity={0.9} />
-          <hemisphereLight args={["#f0ece1", "#14120f", 1.2]} />
-          <directionalLight
-            position={[4, 7, 5]}
-            intensity={2.4}
-            castShadow
-            shadow-mapSize={[1024, 1024]}
-          />
-          <directionalLight position={[-4, 3, -3]} intensity={0.55} />
-          <Suspense fallback={null}>
-            <GlbModelInternal url={url} />
-            <ContactShadows
-              position={[0, -1.32, 0]}
-              opacity={0.42}
-              scale={7}
-              blur={2.4}
-              far={4}
-            />
-          </Suspense>
-          <mesh
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, -1.34, 0]}
-            receiveShadow
-          >
-            <circleGeometry args={[3.2, 96]} />
-            <meshStandardMaterial color="#1b1a17" roughness={0.92} />
-          </mesh>
-          <OrbitControls
-            makeDefault
-            autoRotate
-            autoRotateSpeed={0.55}
-            enablePan={false}
-            enableZoom={false}
-            minDistance={4.5}
-            maxDistance={7.5}
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 2.05}
-            target={[0, 0.05, 0]}
-          />
-        </Canvas>
-      )}
-      <div className="furniture-viewer-label">
-        <span>3D Interactivo · Arrastrá para rotar</span>
-      </div>
-    </div>
-  );
-}
-
 // ─── IMAGE SLIDER ─────────────────────────────────────────────────────────────
 function ProjectImageSlider({ images, onOpenGallery }) {
   const [idx, setIdx] = useState(0);
   const isVideo = images[0]?.endsWith(".mp4");
-  const isGlb = images[idx]?.endsWith(".glb");
+  const containerRef = useRef(null);
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
     setIdx(0);
   }, [images]);
 
   useEffect(() => {
-    if (isVideo || isGlb || images.length <= 1) return;
-    const t = setInterval(() => setIdx((p) => (p + 1) % images.length), 3200);
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (isVideo || images.length <= 1 || !inView) return;
+    const t = setInterval(() => setIdx((p) => (p + 1) % images.length), 3400);
     return () => clearInterval(t);
-  }, [images.length, isVideo, isGlb]);
+  }, [images, isVideo, inView]);
 
   const resolve = (p) => {
     if (p.startsWith("http")) return p;
@@ -1172,21 +749,21 @@ function ProjectImageSlider({ images, onOpenGallery }) {
           : p;
     return import.meta.env.BASE_URL + encodeURI(clean);
   };
+
   return (
     <div
+      ref={containerRef}
       className="project-img-wrap"
       style={{
         position: "relative",
         height: 220,
         overflow: "hidden",
         background: "var(--cream-alt)",
-        cursor: isGlb ? "default" : "pointer",
+        cursor: "pointer",
       }}
-      onClick={() => !isGlb && onOpenGallery(images)}
+      onClick={() => onOpenGallery(images)}
     >
-      {isGlb ? (
-        <GlbCanvas url={resolve(images[idx])} />
-      ) : isVideo ? (
+      {isVideo ? (
         <video
           src={resolve(images[0])}
           muted
@@ -1207,7 +784,7 @@ function ProjectImageSlider({ images, onOpenGallery }) {
           className="img-zoom"
         />
       )}
-      {images.length > 1 && !isVideo && !isGlb && (
+      {images.length > 1 && !isVideo && (
         <>
           <button
             type="button"
@@ -1231,7 +808,7 @@ function ProjectImageSlider({ images, onOpenGallery }) {
           </button>
         </>
       )}
-      {images.length > 1 && !isVideo && !isGlb && (
+      {images.length > 1 && !isVideo && (
         <div className="slider-dots">
           {images.map((_, i) => (
             <div
@@ -1245,138 +822,10 @@ function ProjectImageSlider({ images, onOpenGallery }) {
   );
 }
 
-// ─── PROJECT ROW (expandable editorial style) ─────────────────────────────────
-function ProjectRow({ project, index, onOpenMedia }) {
-  const [open, setOpen] = useState(false);
-  const [snakeActive, setSnakeActive] = useState(false);
-  const isSnake = project.name === "Snake Game AI";
-
-  useEffect(() => {
-    if (!snakeActive) return;
-    const t = setTimeout(() => setSnakeActive(false), 1600);
-    return () => clearTimeout(t);
-  }, [snakeActive]);
-
-  const triggerSnake = () => {
-    if (!isSnake) return;
-    setSnakeActive(true);
-  };
-
-  return (
-    <div>
-      <div
-        className={`project-row ${isSnake ? "snake-row" : ""} ${snakeActive ? "snake-pass-active" : ""}`}
-        onClick={() => setOpen((o) => !o)}
-        onPointerDown={triggerSnake}
-        role="button"
-        aria-expanded={open}
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            triggerSnake();
-            setOpen((o) => !o);
-          }
-        }}
-      >
-        {isSnake && <div className="snake-pass" aria-hidden="true" />}
-        <span className="project-row-num">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <div>
-          <div className="project-row-title">{project.name}</div>
-          <div className="project-row-sub">{project.subtitle}</div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span className="tag-pill sage">{project.tag}</span>
-          <svg
-            className="project-row-arrow"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </div>
-      </div>
-      <div className={`project-expanded ${open ? "open" : ""}`}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 24,
-            padding: "20px 0 24px",
-          }}
-        >
-          <ProjectImageSlider
-            images={project.images}
-            onOpenGallery={onOpenMedia}
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
-            <div>
-              <p
-                style={{
-                  fontSize: 14,
-                  lineHeight: 1.7,
-                  color: "var(--ink-mid)",
-                  marginBottom: 20,
-                }}
-              >
-                {project.description}
-              </p>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {project.links.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-ghost"
-                  style={{ fontSize: 12, padding: "8px 16px" }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {link.label}
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                  >
-                    <path d="M7 17L17 7M17 7H7M17 7V17" />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── LANDING CARD ─────────────────────────────────────────────────────────────
 function LandingCard({ project, onOpenMedia }) {
   return (
-    <article
-      className="landing-card"
-      onClick={(e) => {
-        // Find the "Ver sitio" link and click it, or just do nothing on the wrapper
-      }}
-    >
+    <article className="landing-card">
       <div className="landing-card-media">
         <ProjectImageSlider
           images={project.images}
@@ -1399,13 +848,12 @@ function LandingCard({ project, onOpenMedia }) {
         >
           Ver sitio{" "}
           <svg
-            width="10"
-            height="10"
+            width="11"
+            height="11"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2.5"
-            style={{ marginLeft: 4 }}
+            strokeWidth="2"
           >
             <path d="M7 17L17 7M17 7H7M17 7V17" />
           </svg>
@@ -1415,25 +863,31 @@ function LandingCard({ project, onOpenMedia }) {
   );
 }
 
-// ─── MEDIA MODAL ─────────────────────────────────────────────────────────────
-function MediaModal({ mediaModal, setMediaModal }) {
-  const [modalIndex, setModalIndex] = useState(0);
+// ─── PEEKING BOT ──────────────────────────────────────────────────────────────
+function PeekingBot() {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    setModalIndex(0);
-  }, [mediaModal]);
-  useEffect(() => {
-    const onKey = (e) => {
-      if (!mediaModal) return;
-      if (e.key === "Escape") setMediaModal(null);
-      if (e.key === "ArrowRight")
-        setModalIndex((p) => (p + 1) % mediaModal.length);
-      if (e.key === "ArrowLeft")
-        setModalIndex((p) => (p - 1 + mediaModal.length) % mediaModal.length);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY;
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const shouldBeVisible =
+            scrollPosition > 800 &&
+            scrollPosition + windowHeight < documentHeight - 600;
+          setIsVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mediaModal, setMediaModal]);
-  if (!mediaModal) return null;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const resolve = (p) => {
     if (p.startsWith("http")) return p;
     const clean = p.startsWith("/public/")
@@ -1443,183 +897,120 @@ function MediaModal({ mediaModal, setMediaModal }) {
         : p.startsWith("/")
           ? p.slice(1)
           : p;
-    return import.meta.env.BASE_URL + encodeURI(clean);
+    return import.meta.env.BASE_URL + clean;
   };
+
   return (
     <div
       style={{
         position: "fixed",
-        inset: 0,
-        zIndex: 50,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 16,
-        background: "rgba(26,24,20,0.92)",
-        backdropFilter: "blur(12px)",
+        right: isVisible ? "-100px" : "-250px",
+        bottom: "15%",
+        transform: `rotate(${isVisible ? "-12deg" : "0deg"})`,
+        transformOrigin: "bottom right",
+        transition: "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        zIndex: -1,
+        pointerEvents: "none",
+        width: "180px",
+        filter: "drop-shadow(-8px 12px 24px rgba(0,0,0,0.12))",
       }}
-      onClick={() => setMediaModal(null)}
     >
-      <button
-        type="button"
-        style={{
-          position: "absolute",
-          top: 20,
-          right: 20,
-          width: 40,
-          height: 40,
-          borderRadius: "50%",
-          background: "rgba(255,255,255,0.1)",
-          border: "none",
-          color: "#fff",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          setMediaModal(null);
-        }}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          width="16"
-          height="16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-      {mediaModal.length > 1 && (
-        <>
-          <button
-            type="button"
-            style={{
-              position: "absolute",
-              left: 20,
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.1)",
-              border: "none",
-              color: "#fff",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setModalIndex(
-                (p) => (p - 1 + mediaModal.length) % mediaModal.length,
-              );
-            }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            style={{
-              position: "absolute",
-              right: 20,
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.1)",
-              border: "none",
-              color: "#fff",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              setModalIndex((p) => (p + 1) % mediaModal.length);
-            }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        </>
-      )}
-      <div
-        style={{
-          maxWidth: 1200,
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {mediaModal[modalIndex].endsWith(".glb") ? (
-          <div
-            style={{
-              width: "85vw",
-              height: "75vh",
-              maxWidth: 900,
-              height: 500,
-            }}
-          >
-            <GlbCanvas url={resolve(mediaModal[modalIndex])} />
-          </div>
-        ) : mediaModal[modalIndex].endsWith(".mp4") ? (
-          <video
-            key={mediaModal[modalIndex]}
-            src={resolve(mediaModal[modalIndex])}
-            controls
-            autoPlay
-            style={{
-              maxHeight: "85vh",
-              width: "auto",
-              maxWidth: 650,
-              borderRadius: 16,
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-          />
-        ) : (
-          <img
-            key={mediaModal[modalIndex]}
-            src={resolve(mediaModal[modalIndex])}
-            alt=""
-            style={{
-              maxHeight: "85vh",
-              width: "auto",
-              maxWidth: "100%",
-              borderRadius: 16,
-              border: "1px solid rgba(255,255,255,0.1)",
-              objectFit: "contain",
-            }}
-          />
-        )}
-      </div>
+      <img
+        src={resolve("/botdia.webp")}
+        alt="Bot asomándose"
+        loading="lazy"
+        decoding="async"
+        style={{ width: "100%", height: "auto" }}
+      />
     </div>
+  );
+}
+
+// ─── LIVE CLOCK ───────────────────────────────────────────────────────────────
+function LiveClock() {
+  const [time, setTime] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const hh = String(time.getHours()).padStart(2, "0");
+  const mm = String(time.getMinutes()).padStart(2, "0");
+  const ss = String(time.getSeconds()).padStart(2, "0");
+  return (
+    <span className="hero-clock">
+      {hh}
+      <span className="hero-clock-colon">:</span>
+      {mm}
+      <span className="hero-clock-colon">:</span>
+      {ss}
+    </span>
+  );
+}
+
+// ─── HERO BOOT ────────────────────────────────────────────────────────────────
+function HeroBoot() {
+  const scrollTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <section className="hero-boot">
+      <div className="hero-center">
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="hero-avail-badge">
+            <span className="hero-avail-dot" />
+            <span>Disponible para proyectos</span>
+          </div>
+          <LiveClock />
+        </div>
+
+        <h1 className="hero-name-min">
+          <span className="hero-nm-first">Matías</span>
+          <span className="hero-nm-last">Giménez</span>
+        </h1>
+
+        <p
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: "clamp(15px, 2vw, 18px)",
+            color: "var(--ink-muted)",
+            maxWidth: 580,
+            textAlign: "center",
+            margin: "0 auto",
+            lineHeight: 1.6,
+          }}
+        >
+          Desarrollador <strong style={{ color: "var(--ink)", fontWeight: 500 }}>Backend</strong> & Analista en Sistemas. Especializado en arquitectura de software, APIs y soluciones escalables con IA.
+        </p>
+
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginTop: 8 }}>
+          <button
+            onClick={() => scrollTo("projects")}
+            className="hero-story-btn"
+          >
+            Ver Proyectos
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          <button
+            onClick={() => scrollTo("certifications")}
+            className="hero-link-pill"
+            style={{ padding: "10px 18px", fontSize: 12 }}
+          >
+            🛡️ Certificaciones
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -1670,332 +1061,24 @@ function GitHubCalendarResponsive() {
         blockSize={blockSize}
         blockMargin={blockMargin}
         fontSize={fontSize}
+        theme={{
+          dark: ["#161513", "#23332a", "#345543", "#4d7a60", "#88b09d"],
+        }}
       />
     </div>
   );
 }
 
-// ─── PEEKING BOT ──────────────────────────────────────────────────────────────
-function PeekingBot() {
-  const [isVisible, setIsVisible] = useState(false);
+// ─── MEDIA MODAL ──────────────────────────────────────────────────────────────
+function MediaModal({ mediaModal, setMediaModal }) {
+  const [modalIndex, setModalIndex] = useState(0);
 
   useEffect(() => {
-    const hobbySection = document.getElementById("hobby");
-    if (!hobbySection) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.15 },
-    );
-    obs.observe(hobbySection);
-    return () => obs.disconnect();
-  }, []);
+    setModalIndex(0);
+  }, [mediaModal]);
 
-  const resolve = (p) => {
-    if (p.startsWith("http")) return p;
-    const clean = p.startsWith("/public/")
-      ? p.slice(8)
-      : p.startsWith("/")
-        ? p.slice(1)
-        : p;
-    return import.meta.env.BASE_URL + clean;
-  };
+  if (!mediaModal || !mediaModal.length) return null;
 
-  return (
-    <div
-      style={{
-        position: "fixed",
-        right: isVisible ? "-100px" : "-250px",
-        bottom: "15%",
-        transform: `rotate(${isVisible ? "-12deg" : "0deg"})`,
-        transformOrigin: "bottom right",
-        transition: "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        zIndex: -1,
-        pointerEvents: "none",
-        width: "180px",
-        filter: "drop-shadow(-8px 12px 24px rgba(0,0,0,0.12))",
-      }}
-    >
-      <img
-        src={resolve("/botdia.png")}
-        alt="Bot asomándose"
-        style={{ width: "100%", height: "auto" }}
-      />
-    </div>
-  );
-}
-
-// ─── PROJECT GALLERY ───────────────────────────────────────────────────────────
-// Full-screen project gallery overlay, triggered by "Ver historia"
-// All projects from storyTimeline displayed as scrollable cards
-// Navigation: arrow keys, click arrows, escape to close
-
-function ProjectGallery({ active, onClose }) {
-  const projects = storyTimeline;
-  const [current, setCurrent] = useState(0);
-  const [dir, setDir] = useState(1); // 1=next, -1=prev
-  const [animating, setAnimating] = useState(false);
-  const total = projects.length;
-
-  const go = (next, direction) => {
-    if (animating) return;
-    setDir(direction);
-    setAnimating(true);
-    setTimeout(() => {
-      setCurrent(next);
-      setAnimating(false);
-    }, 420);
-  };
-
-  const goNext = () => go((current + 1) % total, 1);
-  const goPrev = () => go((current - 1 + total) % total, -1);
-
-  // Reset on open
-  useEffect(() => {
-    if (active) {
-      setCurrent(0);
-      setAnimating(false);
-    }
-  }, [active]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    if (!active) return;
-    const onKey = (e) => {
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") goNext();
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp") goPrev();
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [active, current, animating]);
-
-  if (!active) return null;
-
-  const p = projects[current];
-  const mediaList =
-    Array.isArray(p.images) && p.images.length ? p.images : [p.image];
-  const bgSrc = resolveStoryAsset(mediaList[0]);
-  const isVideo =
-    p.isVideo ||
-    (typeof mediaList[0] === "string" && mediaList[0].endsWith(".mp4"));
-
-  return (
-    <div className="pgal-overlay" onClick={onClose}>
-      {/* Background image/video — blurred */}
-      <div className="pgal-bg" key={current}>
-        {isVideo ? (
-          <video
-            src={bgSrc}
-            muted
-            autoPlay
-            loop
-            playsInline
-            className="pgal-bg-media"
-          />
-        ) : (
-          <img src={bgSrc} alt="" className="pgal-bg-media" />
-        )}
-      </div>
-      <div className="pgal-bg-gradient" />
-
-      {/* Content card */}
-      <div
-        className={`pgal-card ${animating ? (dir > 0 ? "pgal-exit-left" : "pgal-exit-right") : "pgal-enter"}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Tag + counter */}
-        <div className="pgal-card-top">
-          <span className="pgal-tag">{p.tag}</span>
-          <span className="pgal-counter">
-            {String(current + 1).padStart(2, "0")} /{" "}
-            {String(total).padStart(2, "0")}
-          </span>
-        </div>
-
-        {/* Year */}
-        <p className="pgal-year">{p.year}</p>
-
-        {/* Title */}
-        <h2 className="pgal-title">{p.name}</h2>
-
-        {/* Divider */}
-        <div className="pgal-rule" />
-
-        {/* Info */}
-        <div className="pgal-info">
-          <div className="pgal-info-block">
-            <p className="pgal-info-label">El desafío</p>
-            <p className="pgal-info-text">{p.problem}</p>
-          </div>
-          <div className="pgal-info-block">
-            <p className="pgal-info-label">La solución</p>
-            <p className="pgal-info-text">{p.solution}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation arrows */}
-      <button
-        className="pgal-arrow pgal-arrow-prev"
-        onClick={(e) => {
-          e.stopPropagation();
-          goPrev();
-        }}
-        aria-label="Anterior"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-      </button>
-      <button
-        className="pgal-arrow pgal-arrow-next"
-        onClick={(e) => {
-          e.stopPropagation();
-          goNext();
-        }}
-        aria-label="Siguiente"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-      </button>
-
-      {/* Dots */}
-      <div className="pgal-dots" onClick={(e) => e.stopPropagation()}>
-        {projects.map((_, i) => (
-          <button
-            key={i}
-            className={`pgal-dot ${i === current ? "pgal-dot-active" : ""}`}
-            onClick={() => go(i, i > current ? 1 : -1)}
-          />
-        ))}
-      </div>
-
-      {/* Close */}
-      <button className="pgal-close" onClick={onClose} aria-label="Cerrar">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-// ─── LIVE CLOCK ───────────────────────────────────────────────────────────────
-function LiveClock() {
-  const [time, setTime] = useState(() => new Date());
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
-  const hh = String(time.getHours()).padStart(2, "0");
-  const mm = String(time.getMinutes()).padStart(2, "0");
-  const ss = String(time.getSeconds()).padStart(2, "0");
-  return (
-    <span className="hero-clock">
-      {hh}
-      <span className="hero-clock-colon">:</span>
-      {mm}
-      <span className="hero-clock-colon">:</span>
-      {ss}
-    </span>
-  );
-}
-
-// ─── HERO BOOT ────────────────────────────────────────────────────────────────
-function HeroBoot({ onStartStory }) {
-  return (
-    <section className="hero-boot">
-      <div className="hero-center">
-        <h1 className="hero-name-min">
-          <span className="hero-nm-first">Matías</span>
-          <span className="hero-nm-last">Giménez</span>
-        </h1>
-      </div>
-    </section>
-  );
-}
-
-// ─── FEATURED 3D SECTION ──────────────────────────────────────────────────────
-function Featured3D({ onStartStory }) {
-  return (
-    <section
-      className="reveal featured-3d-section"
-      style={{
-        maxWidth: 1200,
-        margin: "80px auto",
-        padding: "0 32px",
-      }}
-    >
-      <div
-        className="featured-3d-container"
-        onClick={onStartStory}
-        onMouseEnter={loadStory3D}
-        onFocus={loadStory3D}
-      >
-        <div className="featured-3d-content">
-          <div className="featured-3d-tag">Experiencia Inmersiva</div>
-          <h2 className="featured-3d-title">Explora mi Portfolio en 3D</h2>
-          <p className="featured-3d-desc">
-            Explora mis proyectos dentro de una recreación de mi universidad.
-            Este espacio representa el lugar donde me formé y donde nacieron las
-            ideas que hoy son realidad.
-          </p>
-          <button className="featured-3d-btn" onMouseEnter={loadStory3D}>
-            Entrar al Mundo 3D
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-              <line x1="12" y1="22.08" x2="12" y2="12"></line>
-            </svg>
-          </button>
-        </div>
-        <div className="featured-3d-image-wrap">
-          <img
-            src={import.meta.env.BASE_URL + "preview3d.png"}
-            alt="3D Portfolio Preview"
-            className="featured-3d-img"
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="featured-3d-overlay" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── 3D FEATURE BLOCK (mueble sin tarjeta, full-width) ───────────────────────
-function GlbFeatureBlock({ project }) {
   const resolve = (p) => {
     if (p.startsWith("http")) return p;
     const clean = p.startsWith("/public/")
@@ -2007,71 +1090,128 @@ function GlbFeatureBlock({ project }) {
           : p;
     return import.meta.env.BASE_URL + encodeURI(clean);
   };
-  const glbUrl = project.images.find((img) => img.endsWith(".glb"));
+
   return (
-    <div className="reveal" style={{ marginBottom: 48 }}>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        background: "rgba(0,0,0,0.85)",
+        backdropFilter: "blur(8px)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
+      }}
+      onClick={() => setMediaModal(null)}
+    >
+      <button
+        style={{
+          position: "absolute",
+          top: 24,
+          right: 24,
+          background: "none",
+          border: "none",
+          color: "#fff",
+          fontSize: 28,
+          cursor: "pointer",
+          zIndex: 10000,
+        }}
+        onClick={() => setMediaModal(null)}
+      >
+        ×
+      </button>
+
+      {mediaModal.length > 1 && (
+        <>
+          <button
+            style={{
+              position: "absolute",
+              left: 24,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.1)",
+              border: "none",
+              color: "#fff",
+              fontSize: 24,
+              cursor: "pointer",
+              padding: "16px 20px",
+              borderRadius: "50%",
+              zIndex: 10000,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalIndex(
+                (p) => (p - 1 + mediaModal.length) % mediaModal.length,
+              );
+            }}
+          >
+            ‹
+          </button>
+          <button
+            style={{
+              position: "absolute",
+              right: 24,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.1)",
+              border: "none",
+              color: "#fff",
+              fontSize: 24,
+              cursor: "pointer",
+              padding: "16px 20px",
+              borderRadius: "50%",
+              zIndex: 10000,
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalIndex((p) => (p + 1) % mediaModal.length);
+            }}
+          >
+            ›
+          </button>
+        </>
+      )}
       <div
         style={{
+          maxWidth: 1200,
+          width: "100%",
           display: "flex",
           alignItems: "center",
-          gap: 12,
-          marginBottom: 16,
+          justifyContent: "center",
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <span className="tag-pill sage">{project.tag}</span>
-        {project.year && (
-          <span style={{ fontSize: 12, color: "var(--ink-faint)" }}>
-            {project.year}
-          </span>
+        {mediaModal[modalIndex].endsWith(".mp4") ? (
+          <video
+            key={mediaModal[modalIndex]}
+            src={resolve(mediaModal[modalIndex])}
+            controls
+            autoPlay
+            style={{
+              maxHeight: "85vh",
+              width: "auto",
+              maxWidth: 650,
+              borderRadius: 16,
+              border: "1px solid rgba(255,255,255,0.1)",
+            }}
+          />
+        ) : (
+          <img
+            key={mediaModal[modalIndex]}
+            src={resolve(mediaModal[modalIndex])}
+            alt=""
+            style={{
+              maxHeight: "85vh",
+              width: "auto",
+              maxWidth: "100%",
+              borderRadius: 16,
+              border: "1px solid rgba(255,255,255,0.1)",
+              objectFit: "contain",
+            }}
+          />
         )}
-      </div>
-      <h3
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: 22,
-          fontWeight: 600,
-          color: "var(--ink)",
-          marginBottom: 8,
-        }}
-      >
-        {project.name}
-      </h3>
-      {project.subtitle && (
-        <p
-          style={{
-            fontSize: 12,
-            color: "var(--ink-muted)",
-            marginBottom: 12,
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-          }}
-        >
-          {project.subtitle}
-        </p>
-      )}
-      {project.description && (
-        <p
-          style={{
-            fontSize: 14,
-            lineHeight: 1.7,
-            color: "var(--ink-mid)",
-            marginBottom: 20,
-            maxWidth: 680,
-          }}
-        >
-          {project.description}
-        </p>
-      )}
-      <div
-        style={{
-          width: "100%",
-          height: 480,
-          borderRadius: 12,
-          overflow: "hidden",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <GlbCanvas url={resolve(glbUrl)} />
       </div>
     </div>
   );
@@ -2217,13 +1357,6 @@ function ProjectGrid({ projects, onOpenMedia, showFilters = true }) {
     return p.category === filter;
   });
 
-  const regularProjects = filteredProjects.filter(
-    (p) => !p.images.some((img) => img.endsWith(".glb")),
-  );
-  const glbProjects = filteredProjects.filter((p) =>
-    p.images.some((img) => img.endsWith(".glb")),
-  );
-
   return (
     <>
       {showFilters && (
@@ -2246,82 +1379,77 @@ function ProjectGrid({ projects, onOpenMedia, showFilters = true }) {
         </div>
       )}
 
-      {glbProjects.map((p) => (
-        <GlbFeatureBlock key={p.name} project={p} />
-      ))}
-      {regularProjects.length > 0 && (
-        <div className="proj-grid">
-          {regularProjects.map((p, i) => (
-            <article
-              key={p.name}
-              className="proj-card reveal"
-              style={{ transitionDelay: `${i * 0.07}s` }}
-            >
-              <div className="proj-card-media">
-                <BrowserMockup urlDisplay={p.displayUrl || `https://${p.name.toLowerCase().replace(/\s+/g, '')}.com`}>
-                  <ProjectImageSlider
-                    images={p.images}
-                    onOpenGallery={onOpenMedia}
-                  />
-                </BrowserMockup>
+      <div className="proj-grid">
+        {filteredProjects.map((p, i) => (
+          <article
+            key={p.name}
+            className="proj-card reveal"
+            style={{ transitionDelay: `${i * 0.07}s` }}
+          >
+            <div className="proj-card-media">
+              <BrowserMockup urlDisplay={p.displayUrl || `https://${p.name.toLowerCase().replace(/\s+/g, '')}.com`}>
+                <ProjectImageSlider
+                  images={p.images}
+                  onOpenGallery={onOpenMedia}
+                />
+              </BrowserMockup>
+            </div>
+            <div className="proj-card-body">
+              <div className="proj-card-header" style={{ alignItems: "center" }}>
+                <span className="tag-pill sage">{p.tag}</span>
+                {p.status && <StatusBadge type={p.status.type} label={p.status.label} />}
               </div>
-              <div className="proj-card-body">
-                <div className="proj-card-header" style={{ alignItems: "center" }}>
-                  <span className="tag-pill sage">{p.tag}</span>
-                  {p.status && <StatusBadge type={p.status.type} label={p.status.label} />}
-                </div>
-                <h3 className="proj-card-name" style={{ marginTop: 8 }}>{p.name}</h3>
-                <p className="proj-card-sub">{p.subtitle}</p>
+              <h3 className="proj-card-name" style={{ marginTop: 8 }}>{p.name}</h3>
+              <p className="proj-card-sub">{p.subtitle}</p>
 
-                {p.metrics && p.metrics.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0 14px" }}>
-                    {p.metrics.map((m, idx) => (
-                      <span key={idx} className="metric-pill">
-                        ⚡ {m}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <p className="proj-card-desc">{p.description}</p>
-
-                <div className="proj-card-links" style={{ gap: 8 }}>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{ fontSize: 11, padding: "6px 14px" }}
-                    onClick={() => setDetailProject(p)}
-                  >
-                    Detalle Técnico
-                  </button>
-                  {p.links && p.links.map((link) => (
-                    <a
-                      key={link.label}
-                      href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn-ghost"
-                      style={{ fontSize: 11, padding: "6px 12px" }}
-                    >
-                      {link.label}
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                      >
-                        <path d="M7 17L17 7M17 7H7M17 7V17" />
-                      </svg>
-                    </a>
+              {p.metrics && p.metrics.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, margin: "10px 0 14px" }}>
+                  {p.metrics.map((m, idx) => (
+                    <span key={idx} className="metric-pill">
+                      ⚡ {m}
+                    </span>
                   ))}
                 </div>
+              )}
+
+              <p className="proj-card-desc">{p.description}</p>
+
+              <div className="proj-card-links" style={{ gap: 8 }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ fontSize: 11, padding: "6px 14px" }}
+                  onClick={() => setDetailProject(p)}
+                >
+                  Detalle Técnico
+                </button>
+                {p.links && p.links.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-ghost"
+                    style={{ fontSize: 11, padding: "6px 12px" }}
+                  >
+                    {link.label}
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <path d="M7 17L17 7M17 7H7M17 7V17" />
+                    </svg>
+                  </a>
+                ))}
               </div>
-            </article>
-          ))}
-        </div>
-      )}
+            </div>
+          </article>
+        ))}
+      </div>
 
       {detailProject && (
         <ProjectDetailModal
@@ -2333,385 +1461,644 @@ function ProjectGrid({ projects, onOpenMedia, showFilters = true }) {
   );
 }
 
+// ─── CERTIFICATIONS SECTION ───────────────────────────────────────────────────
+function CertificationsSection({ onOpenPdf }) {
+  const resolve = (p) => {
+    if (p.startsWith("http")) return p;
+    const clean = p.startsWith("/public/")
+      ? p.slice(8)
+      : p.startsWith("public/")
+        ? p.slice(7)
+        : p.startsWith("/")
+          ? p.slice(1)
+          : p;
+    return import.meta.env.BASE_URL + encodeURI(clean);
+  };
+
+  return (
+    <section
+      id="certifications"
+      style={{ maxWidth: 960, margin: "0 auto", padding: "72px 32px" }}
+    >
+      <SectionHeader num="03" label="Certificaciones" />
+      <p
+        className="reveal"
+        style={{
+          fontSize: 13,
+          color: "var(--ink-muted)",
+          marginBottom: 28,
+          marginTop: -24,
+        }}
+      >
+        Credenciales y certificaciones profesionales verificadas.
+      </p>
+
+      <div className="certifications-grid">
+        {certifications.map((cert, i) => (
+          <article
+            key={cert.id}
+            className="cert-card reveal"
+            style={{ transitionDelay: `${i * 0.1}s` }}
+          >
+            <div className="cert-badge-wrapper">
+              <img
+                src={resolve(cert.badge)}
+                alt={cert.title}
+                className="cert-badge-img"
+              />
+              <div className="cert-badge-glow" />
+            </div>
+
+            <div className="cert-content">
+              <div className="cert-header-meta">
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <span className="tag-pill sage">Certificación Profesional</span>
+                  {cert.verified && (
+                    <span className="cert-verified-pill">
+                      <span className="status-dot" style={{ background: "#4ade80" }} />
+                      Credencial Verificada
+                    </span>
+                  )}
+                </div>
+                <span className="cert-date">{cert.date}</span>
+              </div>
+
+              <h3 className="cert-title">{cert.title}</h3>
+              <p className="cert-issuer">Emitido por <strong>{cert.issuer}</strong></p>
+
+              <p className="cert-description">{cert.description}</p>
+
+              <div className="cert-skills-wrap">
+                {cert.skills.map((skill) => (
+                  <span key={skill} className="tech-pill">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              <div className="cert-actions">
+                <a
+                  href={cert.credlyUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary"
+                  style={{ fontSize: 12, padding: "9px 18px" }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                  Verificar en Credly
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenPdf(cert)}
+                  className="btn-ghost"
+                  style={{ fontSize: 12, padding: "9px 16px" }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  Ver Certificado PDF
+                </button>
+
+                <a
+                  href={resolve(cert.pdfUrl)}
+                  download="GoogleCybersecurityProfessionalCertificate_MatiasGimenez.pdf"
+                  className="btn-ghost"
+                  style={{ fontSize: 12, padding: "9px 14px" }}
+                  title="Descargar PDF"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Descargar
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── CERTIFICATE PDF MODAL ────────────────────────────────────────────────────
+function CertificatePdfModal({ cert, onClose }) {
+  if (!cert) return null;
+  const resolve = (p) => {
+    if (p.startsWith("http")) return p;
+    const clean = p.startsWith("/public/")
+      ? p.slice(8)
+      : p.startsWith("public/")
+        ? p.slice(7)
+        : p.startsWith("/")
+          ? p.slice(1)
+          : p;
+    return import.meta.env.BASE_URL + encodeURI(clean);
+  };
+  const pdfResolved = resolve(cert.pdfUrl);
+
+  return (
+    <div className="case-study-overlay" onClick={onClose}>
+      <div
+        className="case-study-card"
+        style={{
+          width: "min(94vw, 860px)",
+          height: "88vh",
+          display: "flex",
+          flexDirection: "column",
+          padding: 24,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="case-study-header" style={{ marginBottom: 14 }}>
+          <div>
+            <span className="tag-pill sage">Certificación Oficial</span>
+            <h2
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 22,
+                margin: "6px 0 2px",
+                fontWeight: 600,
+              }}
+            >
+              {cert.title}
+            </h2>
+            <p style={{ fontSize: 12, color: "var(--ink-muted)", margin: 0 }}>
+              {cert.issuer} · {cert.date}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "none",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              color: "#fff",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            borderRadius: 8,
+            overflow: "hidden",
+            border: "1px solid var(--border)",
+            background: "#1a1918",
+            position: "relative",
+          }}
+        >
+          <iframe
+            src={`${pdfResolved}#toolbar=1&navpanes=0`}
+            title={cert.title}
+            width="100%"
+            height="100%"
+            style={{ border: "none" }}
+          />
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: 14,
+            flexWrap: "wrap",
+            gap: 10,
+          }}
+        >
+          <a
+            href={cert.credlyUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary"
+            style={{ fontSize: 11, padding: "8px 16px" }}
+          >
+            Verificar en Credly
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <path d="M7 17L17 7M17 7H7M17 7V17" />
+            </svg>
+          </a>
+          <a
+            href={pdfResolved}
+            download="GoogleCybersecurityProfessionalCertificate_MatiasGimenez.pdf"
+            className="btn-ghost"
+            style={{ fontSize: 11, padding: "8px 16px" }}
+          >
+            Descargar Archivo PDF
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── APP ──────────────────────────────────────────────────────────────────────
 function App() {
   const [mediaModal, setMediaModal] = useState(null);
-  const [storyActive, setStoryActive] = useState(false);
-  const [storyUnlocked, setStoryUnlocked] = useState(true);
-  const [storySession, setStorySession] = useState(0);
+  const [pdfModalCert, setPdfModalCert] = useState(null);
   const active = useActiveSection();
   useScrollReveal();
   useSmoothScroll();
 
   const handleOpenMedia = (arr) => setMediaModal(arr);
-  const handleStartStory = () => {
-    setStorySession((s) => s + 1);
-    setStoryActive(true);
-  };
-  const handleFinishStory = () => setStoryUnlocked(true);
 
   const S = { maxWidth: 960, margin: "0 auto", padding: "0 32px" };
   const divider = { borderTop: "1px solid var(--border)", margin: 0 };
 
   return (
     <>
-      <CustomCursor />
       <Navbar active={active} />
 
       <main style={{ minHeight: "100vh" }}>
         {/* HERO */}
-        <HeroBoot onStartStory={() => setStoryActive(true)} />
+        <HeroBoot />
 
-        <Featured3D onStartStory={() => setStoryActive(true)} />
+        <hr style={divider} />
 
-        {storyUnlocked && (
-          <>
-            <hr style={divider} />
-
-            {/* ABOUT */}
-            <section
-              id="about"
-              style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
-            >
-              <SectionHeader num="01" label="Sobre mí" />
-              <div className="about-grid">
-                <div className="reveal">
-                  <h2
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: 28,
-                      fontWeight: 600,
-                      color: "var(--ink)",
-                      lineHeight: 1.2,
-                      marginBottom: 24,
-                    }}
-                  >
-                    Construyo software
-                    <br />
-                    <em style={{ color: "var(--sage)" }}>que escala.</em>
-                  </h2>
-                  {[
-                    { label: "Rol", value: "Backend Developer" },
-                    {
-                      label: "Formación",
-                      value: "Ing. en Sistemas (avanzado)",
-                    },
-                    { label: "Ubicación", value: "San Luis, Argentina" },
-                    { label: "Idiomas", value: "Español, Inglés B2" },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      style={{
-                        display: "flex",
-                        gap: 16,
-                        padding: "10px 0",
-                        borderBottom: "1px solid var(--border)",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 600,
-                          letterSpacing: "0.14em",
-                          textTransform: "uppercase",
-                          color: "var(--ink-faint)",
-                          width: 80,
-                          flexShrink: 0,
-                          paddingTop: 2,
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                      <span style={{ fontSize: 14, color: "var(--ink-mid)" }}>
-                        {item.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div className="reveal reveal-delay-1">
-                  <p
-                    style={{
-                      fontSize: 16,
-                      lineHeight: 1.8,
-                      color: "var(--ink-mid)",
-                      marginBottom: 16,
-                    }}
-                  >
-                    Soy Analista en Sistemas orientado al desarrollo{" "}
-                    <strong style={{ color: "var(--ink)" }}>Backend</strong> con
-                    fuerte interés en arquitectura de software, IA aplicada e
-                    infraestructura cloud.
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      lineHeight: 1.8,
-                      color: "var(--ink-muted)",
-                      marginBottom: 24,
-                    }}
-                  >
-                    Trabajo con mentalidad de producto: priorizo calidad
-                    técnica, resultados medibles y soluciones que realmente
-                    funcionan en producción.
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {[
-                      "Node.js",
-                      "Express",
-                      "MySQL",
-                      "MongoDB",
-                      "REST APIs",
-                      "Material UI",
-                      "Prisma",
-                    ].map((t) => (
-                      <span key={t} className="tech-pill">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="reveal reveal-delay-2 github-calendar-wrap"
-                style={{ marginTop: 56 }}
-              >
-                <GitHubCalendarResponsive />
-              </div>
-            </section>
-
-            <hr style={divider} />
-
-            {/* STACK */}
-            <section
-              id="stack"
-              style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
-            >
-              <SectionHeader num="02" label="Stack Tecnológico" />
-              <SkillSynergyNetwork />
-            </section>
-
-            <hr style={divider} />
-
-            {/* PROJECTS */}
-            <section
-              id="projects"
-              style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
-            >
-              <SectionHeader num="03" label="Proyectos" />
-              <p
-                className="reveal"
-                style={{
-                  fontSize: 13,
-                  color: "var(--ink-muted)",
-                  marginBottom: 24,
-                  marginTop: -24,
-                }}
-              >
-                Proyectos con impacto real y usuarios activos.
-              </p>
-              <ProjectGrid
-                projects={mainProjects}
-                onOpenMedia={handleOpenMedia}
-              />
-            </section>
-
-            <hr style={divider} />
-
-            {/* HOBBY */}
-            <section
-              id="hobby"
-              style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
-            >
-              <SectionHeader num="04" label="Proyectos Hobby" />
-              <p
-                className="reveal"
-                style={{
-                  fontSize: 13,
-                  color: "var(--ink-muted)",
-                  marginBottom: 24,
-                  marginTop: -24,
-                }}
-              >
-                Automatización, web scraping e Inteligencia Artificial aplicada.
-              </p>
-              <ProjectGrid
-                projects={hobbyProjects}
-                onOpenMedia={handleOpenMedia}
-              />
-            </section>
-
-            <hr style={divider} />
-
-            {/* LANDINGS */}
-            <section
-              id="landings"
-              style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
-            >
-              <SectionHeader num="05" label="Landing Pages" />
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                  gap: 24,
-                  marginTop: 8,
-                }}
-              >
-                {additionalProjects.map((p, i) => (
-                  <div key={p.name} className={`reveal reveal-delay-${i}`}>
-                    <LandingCard project={p} onOpenMedia={handleOpenMedia} />
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <hr style={divider} />
-
-            {/* CONTACT */}
-            <section
-              id="contact"
-              style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
-            >
-              <SectionHeader num="06" label="Contacto" />
-              <div
-                className="reveal"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 64,
-                  alignItems: "center",
-                }}
-              >
-                <div>
-                  <h2
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "clamp(2.2rem,5vw,3.5rem)",
-                      fontWeight: 700,
-                      color: "var(--ink)",
-                      lineHeight: 1.05,
-                      marginBottom: 20,
-                    }}
-                  >
-                    Trabajemos
-                    <br />
-                    <em style={{ color: "var(--sage)" }}>juntos.</em>
-                  </h2>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: "var(--ink-muted)",
-                      lineHeight: 1.7,
-                      maxWidth: 360,
-                    }}
-                  >
-                    Disponible para proyectos freelance, posiciones full-time o
-                    simplemente para charlar sobre tecnología.
-                  </p>
-                </div>
-                <div
-                  style={{ display: "flex", flexDirection: "column", gap: 16 }}
-                >
-                  <a
-                    href="mailto:matiasgimenez452@gmail.com"
-                    className="btn-primary"
-                    style={{ justifyContent: "center", padding: "14px 24px" }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="16"
-                      height="16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <rect x="2" y="4" width="20" height="16" rx="2" />
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                    </svg>
-                    matiasgimenez452@gmail.com
-                  </a>
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <a
-                      href="https://www.linkedin.com/in/matias-gimenez-1a7a172bb/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn-ghost"
-                      style={{ flex: 1, justifyContent: "center" }}
-                    >
-                      LinkedIn
-                    </a>
-                    <a
-                      href="https://github.com/MatiGimenezD"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn-ghost"
-                      style={{ flex: 1, justifyContent: "center" }}
-                    >
-                      GitHub
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* FOOTER */}
-            <footer
-              style={{
-                borderTop: "1px solid var(--border)",
-                padding: "24px 32px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                maxWidth: 960,
-                margin: "0 auto",
-              }}
-            >
-              <span
+        {/* 01: ABOUT */}
+        <section
+          id="about"
+          style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
+        >
+          <SectionHeader num="01" label="Sobre mí" />
+          <div className="about-grid">
+            <div className="reveal">
+              <h2
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: 13,
-                  color: "var(--ink-muted)",
+                  fontSize: 28,
+                  fontWeight: 600,
+                  color: "var(--ink)",
+                  lineHeight: 1.2,
+                  marginBottom: 24,
                 }}
               >
-                Matías Giménez · 2025
-              </span>
-              <div style={{ display: "flex", gap: 20 }}>
-                {[
-                  { l: "GitHub", h: "https://github.com/MatiGimenezD" },
-                  {
-                    l: "LinkedIn",
-                    h: "https://www.linkedin.com/in/matias-gimenez-1a7a172bb/",
-                  },
-                  { l: "Email", h: "mailto:matiasgimenez452@gmail.com" },
-                ].map((a) => (
-                  <a
-                    key={a.l}
-                    href={a.h}
-                    target={a.h.startsWith("mailto") ? undefined : "_blank"}
-                    rel="noreferrer"
-                    className="footer-link"
+                Construyo software
+                <br />
+                <em style={{ color: "var(--sage)" }}>que escala.</em>
+              </h2>
+              {[
+                { label: "Rol", value: "Backend Developer" },
+                {
+                  label: "Formación",
+                  value: "Ing. en Sistemas (avanzado)",
+                },
+                { label: "Ubicación", value: "San Luis, Argentina" },
+                { label: "Idiomas", value: "Español, Inglés B2" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    display: "flex",
+                    gap: 16,
+                    padding: "10px 0",
+                    borderBottom: "1px solid var(--border)",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "var(--ink-faint)",
+                      width: 80,
+                      flexShrink: 0,
+                      paddingTop: 2,
+                    }}
                   >
-                    {a.l}
-                  </a>
+                    {item.label}
+                  </span>
+                  <span style={{ fontSize: 14, color: "var(--ink-mid)" }}>
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="reveal reveal-delay-1">
+              <p
+                style={{
+                  fontSize: 16,
+                  lineHeight: 1.8,
+                  color: "var(--ink-mid)",
+                  marginBottom: 16,
+                }}
+              >
+                Soy Analista en Sistemas orientado al desarrollo{" "}
+                <strong style={{ color: "var(--ink)" }}>Backend</strong> con
+                fuerte interés en arquitectura de software, ciberseguridad, IA aplicada e
+                infraestructura cloud.
+              </p>
+              <p
+                style={{
+                  fontSize: 14,
+                  lineHeight: 1.8,
+                  color: "var(--ink-muted)",
+                  marginBottom: 24,
+                }}
+              >
+                Trabajo con mentalidad de producto: priorizo calidad
+                técnica, seguridad, resultados medibles y soluciones que realmente
+                funcionan en producción.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {[
+                  "Node.js",
+                  "Express",
+                  "Python",
+                  "MySQL",
+                  "MongoDB",
+                  "REST APIs",
+                  "Cybersecurity",
+                  "Material UI",
+                  "Prisma",
+                ].map((t) => (
+                  <span key={t} className="tech-pill">
+                    {t}
+                  </span>
                 ))}
               </div>
-            </footer>
-          </>
-        )}
+            </div>
+          </div>
+
+          <div
+            className="reveal reveal-delay-2 github-calendar-wrap"
+            style={{ marginTop: 56 }}
+          >
+            <GitHubCalendarResponsive />
+          </div>
+        </section>
+
+        <hr style={divider} />
+
+        {/* 02: STACK */}
+        <section
+          id="stack"
+          style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
+        >
+          <SectionHeader num="02" label="Stack Tecnológico" />
+          <SkillSynergyNetwork />
+        </section>
+
+        <hr style={divider} />
+
+        {/* 03: CERTIFICATIONS */}
+        <CertificationsSection onOpenPdf={(cert) => setPdfModalCert(cert)} />
+
+        <hr style={divider} />
+
+        {/* 04: PROJECTS */}
+        <section
+          id="projects"
+          style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
+        >
+          <SectionHeader num="04" label="Proyectos" />
+          <p
+            className="reveal"
+            style={{
+              fontSize: 13,
+              color: "var(--ink-muted)",
+              marginBottom: 24,
+              marginTop: -24,
+            }}
+          >
+            Proyectos con impacto real y usuarios activos.
+          </p>
+          <ProjectGrid
+            projects={mainProjects}
+            onOpenMedia={handleOpenMedia}
+          />
+        </section>
+
+        <hr style={divider} />
+
+        {/* 05: HOBBY */}
+        <section
+          id="hobby"
+          style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
+        >
+          <SectionHeader num="05" label="Proyectos Hobby" />
+          <p
+            className="reveal"
+            style={{
+              fontSize: 13,
+              color: "var(--ink-muted)",
+              marginBottom: 24,
+              marginTop: -24,
+            }}
+          >
+            Automatización, web scraping, modelado e Inteligencia Artificial aplicada.
+          </p>
+          <ProjectGrid
+            projects={hobbyProjects}
+            onOpenMedia={handleOpenMedia}
+          />
+        </section>
+
+        <hr style={divider} />
+
+        {/* 06: LANDINGS */}
+        <section
+          id="landings"
+          style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
+        >
+          <SectionHeader num="06" label="Landing Pages" />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 24,
+              marginTop: 8,
+            }}
+          >
+            {additionalProjects.map((p, i) => (
+              <div key={p.name} className={`reveal reveal-delay-${i}`}>
+                <LandingCard project={p} onOpenMedia={handleOpenMedia} />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <hr style={divider} />
+
+        {/* 07: CONTACT */}
+        <section
+          id="contact"
+          style={{ ...S, paddingTop: 72, paddingBottom: 72 }}
+        >
+          <SectionHeader num="07" label="Contacto" />
+          <div
+            className="reveal"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 64,
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(2.2rem,5vw,3.5rem)",
+                  fontWeight: 700,
+                  color: "var(--ink)",
+                  lineHeight: 1.05,
+                  marginBottom: 20,
+                }}
+              >
+                Trabajemos
+                <br />
+                <em style={{ color: "var(--sage)" }}>juntos.</em>
+              </h2>
+              <p
+                style={{
+                  fontSize: 14,
+                  color: "var(--ink-muted)",
+                  lineHeight: 1.7,
+                  maxWidth: 360,
+                }}
+              >
+                Disponible para proyectos freelance, posiciones full-time o
+                simplemente para charlar sobre tecnología.
+              </p>
+            </div>
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: 16 }}
+            >
+              <a
+                href="mailto:matiasgimenez452@gmail.com"
+                className="btn-primary"
+                style={{ justifyContent: "center", padding: "14px 24px" }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                matiasgimenez452@gmail.com
+              </a>
+              <div style={{ display: "flex", gap: 12 }}>
+                <a
+                  href="https://www.linkedin.com/in/matias-gimenez-1a7a172bb/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-ghost"
+                  style={{ flex: 1, justifyContent: "center" }}
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href="https://github.com/MatiGimenezD"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-ghost"
+                  style={{ flex: 1, justifyContent: "center" }}
+                >
+                  GitHub
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FOOTER */}
+        <footer
+          style={{
+            borderTop: "1px solid var(--border)",
+            padding: "24px 32px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            maxWidth: 960,
+            margin: "0 auto",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 13,
+              color: "var(--ink-muted)",
+            }}
+          >
+            Matías Giménez · 2025
+          </span>
+          <div style={{ display: "flex", gap: 20 }}>
+            {[
+              { l: "GitHub", h: "https://github.com/MatiGimenezD" },
+              {
+                l: "LinkedIn",
+                h: "https://www.linkedin.com/in/matias-gimenez-1a7a172bb/",
+              },
+              { l: "Email", h: "mailto:matiasgimenez452@gmail.com" },
+            ].map((a) => (
+              <a
+                key={a.l}
+                href={a.h}
+                target={a.h.startsWith("mailto") ? undefined : "_blank"}
+                rel="noreferrer"
+                className="footer-link"
+              >
+                {a.l}
+              </a>
+            ))}
+          </div>
+        </footer>
       </main>
 
       <MediaModal mediaModal={mediaModal} setMediaModal={setMediaModal} />
+      <CertificatePdfModal
+        cert={pdfModalCert}
+        onClose={() => setPdfModalCert(null)}
+      />
       <PeekingBot />
-
-      <Suspense fallback={null}>
-        <Story3D
-          projects={storyTimeline}
-          active={storyActive}
-          onClose={() => setStoryActive(false)}
-        />
-      </Suspense>
     </>
   );
 }
