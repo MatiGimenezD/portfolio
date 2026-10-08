@@ -193,6 +193,67 @@ code, pre, .font-mono {
   transform: scale(0.97);
 }
 
+/* Scroll cue: a mouse outline with a dot sliding down (transform/opacity only) */
+.scroll-cue {
+  position: relative;
+  width: 20px;
+  height: 32px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1.5px var(--text-secondary);
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 3px;
+  height: 6px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--text-primary);
+  animation: scroll-cue 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes scroll-cue {
+  0% { transform: translateY(0); opacity: 0; }
+  25% { opacity: 1; }
+  80%, 100% { transform: translateY(10px); opacity: 0; }
+}
+
+/* Closed notebook: thin aluminium lid edge on the base, and a soft blue light in the seam between them */
+.notebook-closed-lid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(4px, 0.7vw, 9px);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: linear-gradient(to bottom, #f0f0f2, #c9c9ce 55%, #9a9a9f);
+}
+.notebook-glow {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(41, 151, 255, 0.55) 20%, rgba(170, 215, 255, 0.95) 50%, rgba(41, 151, 255, 0.55) 80%, transparent);
+  animation: notebook-glow 3.2s ease-in-out infinite;
+}
+/* Light spilling onto the base in front of the seam */
+.notebook-glow::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 1px;
+  height: clamp(10px, 1.6vw, 20px);
+  background: radial-gradient(50% 100% at 50% 0%, rgba(41, 151, 255, 0.35), transparent 75%);
+}
+@keyframes notebook-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 /* Media containers */
 .media-container img,
 .media-container video {

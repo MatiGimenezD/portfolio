@@ -378,20 +378,106 @@ function SnakeGame({ playing }) {
   );
 }
 
+
+/* ─── Boot: preload what the first screen shows, drive the #boot bar in index.html, then fade it out ─── */
+const HERO_ASSETS = [...browserTabs.map((t) => t.image), "/simplebuy-galponcito.webp"];
+const LAB_ASSETS = [...labApps.filter((a) => a.id !== "snake").map((a) => a.image), "/diabot.webp"];
+const BOOT_MIN_MS = 1500;
+const BOOT_MAX_MS = 6000;
+
+const preloadImage = (src) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onload = img.onerror = () => (img.decode ? img.decode().catch(() => {}).then(resolve) : resolve());
+    img.src = resolveAsset(src);
+  });
+
+function useBoot() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const boot = document.getElementById("boot");
+    const bar = boot?.querySelector(".boot-bar");
+    const pct = boot?.querySelector(".boot-pct");
+    const root = document.documentElement;
+    const start = performance.now();
+    let done = false;
+    let raf;
+    let loaded = 0;
+    let shown = 0;
+    const tasks = [...HERO_ASSETS.map(preloadImage), document.fonts?.ready ?? Promise.resolve()];
+    tasks.forEach((t) => t.then(() => (loaded += 1)));
+    root.style.overflow = "hidden";
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      cancelAnimationFrame(raf);
+      if (pct) pct.textContent = "100%";
+      root.style.overflow = "";
+      boot?.classList.add("done");
+      setTimeout(() => boot?.remove(), 800);
+      setReady(true);
+      // Warm the lab images while the visitor is still on the hero
+      const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 300));
+      idle(() => LAB_ASSETS.forEach(preloadImage));
+    };
+
+    // Progress = real loading, capped by time so cached loads still play the intro. The bar only gets a new target
+    // a few times per second and its CSS transition (GPU) does the smoothing; the % text is written only when it changes.
+    let goal = 0;
+    let lastPct = -1;
+    const update = () => {
+      goal = Math.min(loaded / tasks.length, (performance.now() - start) / BOOT_MIN_MS);
+      if (bar) bar.style.transform = `scaleX(${0.04 + 0.96 * goal})`;
+      if (goal >= 1) {
+        clearInterval(timer);
+        setTimeout(finish, 650);
+      }
+    };
+    const timer = setInterval(update, 200);
+    tasks.forEach((t) => t.then(update));
+
+    const tick = () => {
+      shown += (goal - shown) * 0.08;
+      const value = Math.round(shown * 100);
+      if (value !== lastPct && pct) pct.textContent = `${(lastPct = value)}%`;
+      if (!done) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const fallback = setTimeout(finish, BOOT_MAX_MS);
+    return () => {
+      done = true;
+      cancelAnimationFrame(raf);
+      clearInterval(timer);
+      clearTimeout(fallback);
+    };
+  }, []);
+
+  return ready;
+}
+
 /* ─── Hero devices: a notebook whose lid opens with scroll, and a phone in front ─── */
-function Notebook({ lid, screenOff, children, className = "" }) {
+function Notebook({ lid, screenOff, closed, children, className = "" }) {
   return (
-    <div className={className} style={{ perspective: "2400px" }}>
+    // Eye level with the hinge: at -90° the lid is edge-on (fully closed, no gap) and it always opens upwards
+    <div className={className} style={{ perspective: "3200px", perspectiveOrigin: "50% 100%" }}>
       <MotionDiv
         style={{ rotateX: lid, transformOrigin: "50% 100%" }}
-        className="relative z-10 rounded-t-[2.2%_3.8%] bg-[#0d0d0e] p-[1.6%] pb-[2.4%] ring-1 ring-white/10"
+        className="relative z-10 rounded-t-[2.2%_3.8%] bg-[#0d0d0e] p-[1.6%] pb-[2.4%] ring-1 ring-white/20"
       >
         <span className="absolute top-[0.55%] left-1/2 -translate-x-1/2 w-[0.6%] aspect-square rounded-full bg-[#2b2b2e]" />
         <div className="relative overflow-hidden rounded-[0.4%] aspect-[1669/945] bg-white">
           {children}
           {/* Screen stays dark until the lid is almost open */}
-          <MotionDiv style={{ opacity: screenOff }} className="absolute inset-0 bg-[#0d0d0e] z-20" />
+          <MotionDiv style={{ opacity: screenOff }} className="absolute inset-0 bg-[#0d0d0e] z-40" />
         </div>
+      </MotionDiv>
+      {/* Closed state: the lid's aluminium edge resting on the base, with the screen's light leaking through the seam */}
+      <MotionDiv style={{ opacity: closed }} className="relative z-20 h-0 pointer-events-none" aria-hidden="true">
+        <span className="notebook-closed-lid" />
+        <span className="notebook-glow" />
       </MotionDiv>
       {/* Aluminium base, wider than the lid, with the opening notch */}
       <div className="relative z-0 -mx-[7%] h-[clamp(7px,1.3vw,16px)] rounded-b-[50%_100%] bg-gradient-to-b from-[#e3e3e6] via-[#b9b9bd] to-[#7d7d82] shadow-[0_30px_50px_-18px_rgba(0,0,0,0.55)]">
@@ -504,7 +590,7 @@ function PhoneFrame({ src, alt, style, className = "" }) {
 const TABS_START = 0.2;
 const TABS_END = 0.97;
 
-function Hero() {
+function Hero({ ready }) {
   const reduce = useReducedMotion();
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -520,10 +606,13 @@ function Hero() {
 
   // Opening fits in the first fifth: title leaves, notebook rises and opens, phone docks, caption lands
   const titleOpacity = useTransform(p, [0, 0.08], [1, 0]);
+  const titlePointer = useTransform(p, (v) => (v < 0.04 ? "auto" : "none"));
   const titleY = useTransform(p, [0, 0.1], [0, -90]);
-  const stageY = useTransform(p, [0, 0.14], ["30vh", "0vh"]);
+  const stageY = useTransform(p, [0, 0.14], ["20vh", "0vh"]);
   const stageScale = useTransform(p, [0, 0.14], [0.84, 1]);
-  const lid = useTransform(p, [0.01, 0.11], [72, 0]);
+  const lid = useTransform(p, [0.01, 0.11], [-90, 0]);
+  // The closed lid (aluminium edge + light in the seam) hands over to the real lid as soon as it starts rotating
+  const closed = useTransform(p, [0.008, 0.03], [1, 0]);
   const screenOff = useTransform(p, [0.06, 0.1], [1, 0]);
   const phoneX = useTransform(p, [0.11, 0.18], ["60%", "0%"]);
   const phoneOpacity = useTransform(p, [0.11, 0.15], [0, 1]);
@@ -533,16 +622,17 @@ function Hero() {
   const tab = browserTabs[active];
   const select = (i) => jumpToStep(ref.current, TABS_START, TABS_END, i, browserTabs.length);
 
+
   const fadeIn = (delay) => ({
     initial: reduce ? false : { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
+    animate: ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 },
     transition: { duration: 1.2, delay, ease: EASE },
   });
 
   const title = (
     <>
       <MotionDiv {...fadeIn(0)}>
-        <p className="kicker">Desarrollador backend</p>
+        <p className="kicker">Desarrollador de software</p>
         <h1 className="headline-xl mt-3">Matías Giménez.</h1>
       </MotionDiv>
       <MotionDiv {...fadeIn(0.15)}>
@@ -562,7 +652,7 @@ function Hero() {
 
   const devices = (style) => (
     <MotionDiv style={style} className="relative w-[min(88vw,980px,calc((100dvh-330px)*1.75))] origin-top">
-      <Notebook lid={reduce ? 0 : lid} screenOff={reduce ? 0 : screenOff} className="w-[84%] ml-[3%]">
+      <Notebook lid={reduce ? 0 : lid} screenOff={reduce ? 0 : screenOff} closed={reduce ? 0 : closed} className="w-[84%] ml-[3%]">
         <BrowserScreen active={active} onSelect={reduce ? undefined : select} />
       </Notebook>
       {/* The phone belongs to SimpleBuy: it docks on that tab and steps aside for the rest */}
@@ -615,13 +705,19 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative h-[250vh]">
-      <span id="proyectos" className="absolute top-[24%]" aria-hidden="true" />
+      {/* Lands just after the lid opens, on the first tab (scroll range is 60% of the section height) */}
+      <span id="proyectos" className="absolute top-[14%]" aria-hidden="true" />
       <div className="sticky top-0 h-[100dvh] overflow-hidden">
-        <MotionDiv style={{ opacity: titleOpacity, y: titleY }} className="absolute inset-x-0 top-[15vh] text-center px-5">
+        <MotionDiv style={{ opacity: titleOpacity, y: titleY, pointerEvents: titlePointer }} className="absolute inset-x-0 top-[15vh] z-10 text-center px-5">
           {title}
         </MotionDiv>
 
         <div className="absolute inset-x-0 top-[12vh] flex justify-center px-5">{devices({ y: stageY, scale: stageScale })}</div>
+
+        <MotionDiv style={{ opacity: titleOpacity }} className="absolute inset-x-0 bottom-[5vh] flex flex-col items-center gap-2 pointer-events-none" aria-hidden="true">
+          <span className="text-[12px] tracking-[0.2em] uppercase text-[var(--text-secondary)]">Deslizá para abrir</span>
+          <span className="scroll-cue" />
+        </MotionDiv>
 
         <MotionDiv style={{ opacity: captionOpacity, y: captionY }} className="absolute inset-x-0 bottom-[24vh] sm:bottom-[5vh] text-center px-5">
           {caption}
@@ -694,14 +790,14 @@ function Desktop({ active, onSelect }) {
           ) : a.id === "diabot" ? (
             <div className="w-full h-[92%] bg-black flex items-center justify-center gap-[2%] px-[2%]">
               {["/diabot1.webp", "/diabot.webp"].map((src, k) => (
-                <img key={src} src={resolveAsset(src)} alt={k ? "Publicaciones diarias del bot con la inflación del día" : a.alt} loading="eager" decoding="async" className="min-w-0 w-[49%] max-h-[94%] object-contain rounded-[0.8em]" />
+                <img key={src} src={resolveAsset(src)} alt={k ? "Publicaciones diarias del bot con la inflación del día" : a.alt} loading="lazy" decoding="async" className="min-w-0 w-[49%] max-h-[94%] object-contain rounded-[0.8em]" />
               ))}
             </div>
           ) : (
             <img
               src={resolveAsset(a.image)}
               alt={a.alt}
-              loading="eager"
+              loading="lazy"
               decoding="async"
               className={`block w-full h-[92%] object-cover ${a.position || "object-top"}`}
             />
@@ -866,6 +962,7 @@ export default function Portfolio() {
     }
   });
   const [copied, setCopied] = useState(false);
+  const ready = useBoot();
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -924,7 +1021,7 @@ export default function Portfolio() {
       </header>
 
       <main id="main-content">
-        <Hero />
+        <Hero ready={ready} />
 
         <LabDesk />
 
