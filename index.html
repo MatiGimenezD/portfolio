@@ -4,26 +4,111 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/portfolio/icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matías Giménez: Backend Developer & Analista en Sistemas</title>
-    <meta name="description" content="Portfolio profesional de Matías Giménez. Desarrollador Backend, Analista de Sistemas y estudiante de Ingeniería. APIs, agentes con IA, ciberseguridad y proyectos en producción." />
-    <meta name="keywords" content="Matías Giménez, Backend Developer, Node.js, Express, MySQL, MongoDB, Python, Ciberseguridad, Portfolio, Argentina" />
+    <title>Matías Giménez: Desarrollador de Software</title>
+    <meta name="description" content="Portfolio profesional de Matías Giménez. Desarrollador de software, Analista de Sistemas y estudiante de Ingeniería. APIs, agentes con IA, ciberseguridad y proyectos en producción." />
+    <meta name="keywords" content="Matías Giménez, Desarrollador de Software, Software Developer, Node.js, Express, MySQL, MongoDB, Python, Ciberseguridad, Portfolio, Argentina" />
     <meta name="author" content="Matías Giménez" />
     <meta name="theme-color" content="#000000" />
     <!-- Open Graph -->
-    <meta property="og:title" content="Matías Giménez: Backend Developer & Analista en Sistemas" />
-    <meta property="og:description" content="Desarrollo backend, agentes con IA, seguridad y aplicaciones en producción." />
+    <meta property="og:title" content="Matías Giménez: Desarrollador de Software" />
+    <meta property="og:description" content="Desarrollo de software, agentes con IA, seguridad y aplicaciones en producción." />
     <meta property="og:type" content="website" />
     <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/portfolio/assets/index-D3lkei-O.js"></script>
+    <style>
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-items: center;
+        background: #000;
+        color: #f5f5f7;
+        --muted: #86868b;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        font-feature-settings: 'cv11', 'ss01';
+        -webkit-font-smoothing: antialiased;
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+      }
+      html[data-theme="light"] #boot { background: #fff; color: #1d1d1f; --muted: #6e6e73; }
+      #boot.done { opacity: 0; visibility: hidden; }
+      #boot.done .boot-inner { transform: scale(1.03); }
+      #boot .boot-inner { display: flex; flex-direction: column; align-items: center; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+
+      /* Name: letters rise in one by one once the font is ready. Only opacity/transform are animated so it stays on the GPU */
+      #boot .boot-name { margin: 0; font-size: clamp(34px, 6vw, 56px); line-height: 1.05; font-weight: 600; letter-spacing: -0.035em; white-space: nowrap; }
+      #boot .boot-name .l { display: inline-block; opacity: 0; transform: translateY(0.35em); will-change: transform, opacity; }
+      #boot.fonts .boot-name .l { animation: boot-letter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: calc(var(--i) * 45ms); }
+      #boot .boot-name .sp { display: inline-block; width: 0.26em; }
+      #boot .boot-name .light { font-weight: 300; }
+      #boot .boot-role {
+        margin-top: 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.34em; text-transform: uppercase; color: var(--muted);
+        opacity: 0; transform: translateY(6px);
+      }
+      #boot.fonts .boot-role { animation: boot-fade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards; }
+
+      /* Progress: hairline bar with a travelling glint, plus a quiet percentage */
+      #boot .boot-progress { margin-top: 44px; display: flex; flex-direction: column; align-items: center; gap: 12px; opacity: 0; }
+      #boot.fonts .boot-progress { animation: boot-fade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.75s forwards; }
+      #boot .boot-track { position: relative; width: 180px; height: 1.5px; border-radius: 2px; overflow: hidden; background: rgba(134, 134, 139, 0.22); }
+      #boot .boot-bar { position: absolute; inset: 0; background: currentColor; transform-origin: left; transform: scaleX(0.04); transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+      #boot .boot-track::after {
+        content: ""; position: absolute; top: 0; bottom: 0; width: 40%;
+        background: linear-gradient(90deg, transparent, rgba(41, 151, 255, 0.9), transparent);
+        animation: boot-glint 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite; will-change: transform;
+      }
+      #boot .boot-pct { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+      @keyframes boot-letter { to { opacity: 1; transform: none; } }
+      @keyframes boot-fade { to { opacity: 1; transform: none; } }
+      @keyframes boot-glint { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+      @media (prefers-reduced-motion: reduce) {
+        #boot *, #boot *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
+      }
+    </style>
+    <script>
+      try { document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark"); } catch (e) {}
+    </script>
+    <script type="module" crossorigin src="/portfolio/assets/index-0tdUuleQ.js"></script>
     <link rel="modulepreload" crossorigin href="/portfolio/assets/rolldown-runtime-DF2fYuay.js">
     <link rel="modulepreload" crossorigin href="/portfolio/assets/ui-vendor-DS8_T4Wx.js">
     <link rel="modulepreload" crossorigin href="/portfolio/assets/react-dom-DDmun2ds.js">
-    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-DvzNv0X9.css">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-SrJwobaS.css">
   </head>
   <body>
+    <div id="boot" role="status" aria-label="Cargando el portfolio de Matías Giménez">
+      <div class="boot-inner" aria-hidden="true">
+        <p class="boot-name"><span data-split="Matías"></span><span class="sp"></span><span class="light" data-split="Giménez"></span></p>
+        <span class="boot-role">Desarrollador de software</span>
+        <div class="boot-progress">
+          <span class="boot-track"><span class="boot-bar"></span></span>
+          <span class="boot-pct">0%</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Split the name into letters, and start the reveal once Inter is ready (or after 700ms, whichever first)
+      (function () {
+        var boot = document.getElementById("boot");
+        var i = 0;
+        boot.querySelectorAll("[data-split]").forEach(function (el) {
+          el.getAttribute("data-split").split("").forEach(function (ch) {
+            var s = document.createElement("span");
+            s.className = "l";
+            s.textContent = ch;
+            s.style.setProperty("--i", i++);
+            el.appendChild(s);
+          });
+        });
+        var go = function () { boot.classList.add("fonts"); };
+        setTimeout(go, 700);
+        if (document.fonts && document.fonts.load) {
+          Promise.all([document.fonts.load("600 48px Inter"), document.fonts.load("300 48px Inter")]).then(go, go);
+        } else go();
+      })();
+    </script>
     <div id="root"></div>
   </body>
 </html>
