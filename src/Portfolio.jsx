@@ -652,10 +652,10 @@ function Hero({ ready }) {
 
   const devices = (style) => (
     <MotionDiv style={style} className="relative w-[min(88vw,980px,calc((100dvh-330px)*1.75))] origin-top">
-      <Notebook lid={reduce ? 0 : lid} screenOff={reduce ? 0 : screenOff} closed={reduce ? 0 : closed} className="w-[84%] ml-[3%]">
+      <Notebook lid={reduce ? 0 : lid} screenOff={reduce ? 0 : screenOff} closed={reduce ? 0 : closed} className="w-[84%] mx-auto">
         <BrowserScreen active={active} onSelect={reduce ? undefined : select} />
       </Notebook>
-      {/* The phone belongs to SimpleBuy: it docks on that tab and steps aside for the rest */}
+      {/* The phone belongs to SimpleBuy: it docks over the notebook's right edge on that tab (absolute, so the notebook stays centred) */}
       <MotionDiv
         className="absolute right-0 bottom-0 w-[19%]"
         animate={{ opacity: active === 0 ? 1 : 0, x: active === 0 ? "0%" : "40%" }}
