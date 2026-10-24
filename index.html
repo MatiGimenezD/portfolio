@@ -8,7 +8,7 @@
     <meta name="description" content="Portfolio profesional de Matías Giménez. Desarrollador de software, Analista de Sistemas y estudiante de Ingeniería. APIs, agentes con IA, ciberseguridad y proyectos en producción." />
     <meta name="keywords" content="Matías Giménez, Desarrollador de Software, Software Developer, Node.js, Express, MySQL, MongoDB, Python, Ciberseguridad, Portfolio, Argentina" />
     <meta name="author" content="Matías Giménez" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#020202" />
     <!-- Open Graph -->
     <meta property="og:title" content="Matías Giménez: Desarrollador de Software" />
     <meta property="og:description" content="Desarrollo de software, agentes con IA, seguridad y aplicaciones en producción." />
@@ -16,7 +16,7 @@
     <!-- Preconnect for fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     <style>
       #boot {
         position: fixed;
@@ -24,7 +24,7 @@
         z-index: 1000;
         display: grid;
         place-items: center;
-        background: #000;
+        background: #020202;
         color: #f5f5f7;
         --muted: #86868b;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
@@ -32,17 +32,16 @@
         -webkit-font-smoothing: antialiased;
         transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
       }
-      html[data-theme="light"] #boot { background: #fff; color: #1d1d1f; --muted: #6e6e73; }
       #boot.done { opacity: 0; visibility: hidden; }
       #boot.done .boot-inner { transform: scale(1.03); }
       #boot .boot-inner { display: flex; flex-direction: column; align-items: center; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
 
       /* Name: letters rise in one by one once the font is ready. Only opacity/transform are animated so it stays on the GPU */
-      #boot .boot-name { margin: 0; font-size: clamp(34px, 6vw, 56px); line-height: 1.05; font-weight: 600; letter-spacing: -0.035em; white-space: nowrap; }
+      #boot .boot-name { margin: 0; font-size: clamp(22px, 4.4vw, 40px); line-height: 1.05; font-weight: 200; letter-spacing: 0.24em; text-transform: uppercase; white-space: nowrap; }
       #boot .boot-name .l { display: inline-block; opacity: 0; transform: translateY(0.35em); will-change: transform, opacity; }
       #boot.fonts .boot-name .l { animation: boot-letter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: calc(var(--i) * 45ms); }
       #boot .boot-name .sp { display: inline-block; width: 0.26em; }
-      #boot .boot-name .light { font-weight: 300; }
+      #boot .boot-name .light { font-weight: 200; }
       #boot .boot-role {
         margin-top: 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.34em; text-transform: uppercase; color: var(--muted);
         opacity: 0; transform: translateY(6px);
@@ -56,7 +55,7 @@
       #boot .boot-bar { position: absolute; inset: 0; background: currentColor; transform-origin: left; transform: scaleX(0.04); transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
       #boot .boot-track::after {
         content: ""; position: absolute; top: 0; bottom: 0; width: 40%;
-        background: linear-gradient(90deg, transparent, rgba(41, 151, 255, 0.9), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
         animation: boot-glint 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite; will-change: transform;
       }
       #boot .boot-pct { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -68,14 +67,11 @@
         #boot *, #boot *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
       }
     </style>
-    <script>
-      try { document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark"); } catch (e) {}
-    </script>
-    <script type="module" crossorigin src="/portfolio/assets/index-CtZf4BVf.js"></script>
+    <script type="module" crossorigin src="/portfolio/assets/index-DIv38ssZ.js"></script>
     <link rel="modulepreload" crossorigin href="/portfolio/assets/rolldown-runtime-DF2fYuay.js">
-    <link rel="modulepreload" crossorigin href="/portfolio/assets/ui-vendor-DS8_T4Wx.js">
-    <link rel="modulepreload" crossorigin href="/portfolio/assets/react-dom-DDmun2ds.js">
-    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-B4D2fMXC.css">
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/ui-vendor-xy88d_XT.js">
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/react-dom-C2fnVcWO.js">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-BAfWB1AZ.css">
   </head>
   <body>
     <div id="boot" role="status" aria-label="Cargando el portfolio de Matías Giménez">
