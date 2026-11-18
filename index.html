@@ -4,113 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/portfolio/icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Matías Giménez: Desarrollador de Software</title>
-    <meta name="description" content="Portfolio profesional de Matías Giménez. Desarrollador de software, Analista de Sistemas y estudiante de Ingeniería. APIs, agentes con IA, ciberseguridad y proyectos en producción." />
-    <meta name="keywords" content="Matías Giménez, Desarrollador de Software, Software Developer, Node.js, Express, MySQL, MongoDB, Python, Ciberseguridad, Portfolio, Argentina" />
+    <title>Matías Giménez · Desarrollador backend Jr. (Node.js, APIs, IA)</title>
+    <meta name="description" content="Matías Giménez, desarrollador backend Jr. en Argentina. Node.js, Express, MySQL, MongoDB y agentes de IA. Productos en producción y disponible para su primer trabajo." />
     <meta name="author" content="Matías Giménez" />
-    <meta name="theme-color" content="#020202" />
-    <!-- Open Graph -->
-    <meta property="og:title" content="Matías Giménez: Desarrollador de Software" />
-    <meta property="og:description" content="Desarrollo de software, agentes con IA, seguridad y aplicaciones en producción." />
+    <meta property="og:title" content="Matías Giménez · Desarrollador backend Jr." />
+    <meta property="og:description" content="Node.js, APIs e IA aplicada. Productos reales en producción. Disponible para mi primer trabajo." />
     <meta property="og:type" content="website" />
-    <!-- Preconnect for fonts -->
+    <meta property="og:image" content="/portfolio/citax-landing.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-    <style>
-      #boot {
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        display: grid;
-        place-items: center;
-        background: #020202;
-        color: #f5f5f7;
-        --muted: #86868b;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-        font-feature-settings: 'cv11', 'ss01';
-        -webkit-font-smoothing: antialiased;
-        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
-      }
-      #boot.done { opacity: 0; visibility: hidden; }
-      #boot.done .boot-inner { transform: scale(1.03); }
-      #boot .boot-inner { display: flex; flex-direction: column; align-items: center; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-
-      /* Name: letters rise in one by one once the font is ready. Only opacity/transform are animated so it stays on the GPU */
-      #boot .boot-name { margin: 0; font-size: clamp(22px, 4.4vw, 40px); line-height: 1.05; font-weight: 200; letter-spacing: 0.24em; text-transform: uppercase; white-space: nowrap; }
-      #boot .boot-name .l { display: inline-block; opacity: 0; transform: translateY(0.35em); will-change: transform, opacity; }
-      #boot.fonts .boot-name .l { animation: boot-letter 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: calc(var(--i) * 45ms); }
-      #boot .boot-name .sp { display: inline-block; width: 0.26em; }
-      #boot .boot-name .light { font-weight: 200; }
-      #boot .boot-role {
-        margin-top: 14px; font-size: 11px; font-weight: 500; letter-spacing: 0.34em; text-transform: uppercase; color: var(--muted);
-        opacity: 0; transform: translateY(6px);
-      }
-      #boot.fonts .boot-role { animation: boot-fade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards; }
-
-      /* Progress: a small eclipse. The moon slides over the sun as the page loads (--p, 0-1) and covers it when everything is ready */
-      #boot .boot-progress { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; opacity: 0; }
-      #boot.fonts .boot-progress { animation: boot-fade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s forwards; }
-      #boot .boot-eclipse { --p: 0; position: relative; width: 64px; height: 64px; }
-      #boot .boot-sun {
-        position: absolute; inset: 0; border-radius: 50%;
-        background: radial-gradient(circle at 42% 38%, #fff8e1 0%, #ffd27a 45%, #f59a2c 100%);
-        box-shadow: 0 0 36px 6px rgba(255, 168, 60, 0.42);
-        transition: box-shadow 0.6s ease;
-      }
-      #boot .boot-moon {
-        position: absolute; inset: -2%; border-radius: 50%; background: #020202;
-        transform: translate(calc((1 - var(--p)) * 118%), calc((1 - var(--p)) * -14%));
-        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform;
-      }
-      #boot.done .boot-sun { box-shadow: 0 0 70px 18px rgba(255, 190, 90, 0.55); }
-      #boot .boot-pct { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--muted); font-variant-numeric: tabular-nums; }
-
-      @keyframes boot-letter { to { opacity: 1; transform: none; } }
-      @keyframes boot-fade { to { opacity: 1; transform: none; } }
-      @media (prefers-reduced-motion: reduce) {
-        #boot *, #boot *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
-      }
-    </style>
-    <script type="module" crossorigin src="/portfolio/assets/index-BQMiB9lQ.js"></script>
-    <link rel="modulepreload" crossorigin href="/portfolio/assets/rolldown-runtime-DF2fYuay.js">
-    <link rel="modulepreload" crossorigin href="/portfolio/assets/ui-vendor-xy88d_XT.js">
-    <link rel="modulepreload" crossorigin href="/portfolio/assets/react-dom-C2fnVcWO.js">
-    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-Cnj6lUnh.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script type="module" crossorigin src="/portfolio/assets/index-Cv4wlyY_.js"></script>
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/rolldown-runtime-Dw2cE7zH.js">
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/ui-vendor-XF-20aRj.js">
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/react-dom-gs30CF8B.js">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-BVdCXQvj.css">
   </head>
   <body>
-    <div id="boot" role="status" aria-label="Cargando el portfolio de Matías Giménez">
-      <div class="boot-inner" aria-hidden="true">
-        <p class="boot-name"><span data-split="Matías"></span><span class="sp"></span><span class="light" data-split="Giménez"></span></p>
-        <span class="boot-role">Desarrollador de software</span>
-        <div class="boot-progress">
-          <span class="boot-eclipse"><span class="boot-sun"></span><span class="boot-moon"></span></span>
-          <span class="boot-pct">0%</span>
-        </div>
-      </div>
-    </div>
-    <script>
-      // Split the name into letters, and start the reveal once Inter is ready (or after 700ms, whichever first)
-      (function () {
-        var boot = document.getElementById("boot");
-        var i = 0;
-        boot.querySelectorAll("[data-split]").forEach(function (el) {
-          el.getAttribute("data-split").split("").forEach(function (ch) {
-            var s = document.createElement("span");
-            s.className = "l";
-            s.textContent = ch;
-            s.style.setProperty("--i", i++);
-            el.appendChild(s);
-          });
-        });
-        var go = function () { boot.classList.add("fonts"); };
-        setTimeout(go, 700);
-        if (document.fonts && document.fonts.load) {
-          Promise.all([document.fonts.load("600 48px Inter"), document.fonts.load("300 48px Inter")]).then(go, go);
-        } else go();
-      })();
-    </script>
-    <div id="root"></div>
+    <div id="root"></div>
   </body>
 </html>
